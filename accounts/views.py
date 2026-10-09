@@ -140,16 +140,22 @@ def announcements(request):
         )
     if request.method == "GET":
         items = Announcement.objects.all()
-        return Response(AnnouncementSerializer(items, many=True).data)
+        return Response(
+            AnnouncementSerializer(items, many=True, context={"request": request}).data
+        )
 
     if not is_staff_member(request.user):
         return Response(
             {"error": "Only executives can post announcements."},
             status=status.HTTP_403_FORBIDDEN,
         )
-    serializer = AnnouncementSerializer(data=request.data)
+    serializer = AnnouncementSerializer(data=request.data, context={"request": request})
     serializer.is_valid(raise_exception=True)
-    serializer.save(created_by=request.user)
+    upload = request.FILES.get("media")
+    media_type = ""
+    if upload:
+        media_type = "video" if upload.content_type.startswith("video/") else "image"
+    serializer.save(created_by=request.user, media_type=media_type)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -165,6 +171,8 @@ def announcement_detail(request, announcement_id):
         item = Announcement.objects.get(id=announcement_id)
     except Announcement.DoesNotExist:
         return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+    if item.media:
+        item.media.delete(save=False)
     item.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 

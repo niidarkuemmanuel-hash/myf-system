@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Profile
+from .models import Announcement, AttendanceRecord, Profile
 
 
 class SignupSerializer(serializers.Serializer):
@@ -40,21 +40,41 @@ class ProfileNameSerializer(serializers.ModelSerializer):
         model = Profile
         fields = ["id", "full_name"]
 
-from .models import Announcement, AttendanceRecord
-
 
 class AnnouncementSerializer(serializers.ModelSerializer):
     posted_by = serializers.SerializerMethodField()
+    media_url = serializers.SerializerMethodField()
+    media = serializers.FileField(required=False, allow_null=True, write_only=True)
 
     class Meta:
         model = Announcement
-        fields = ["id", "title", "message", "created_at", "posted_by"]
-        read_only_fields = ["created_at"]
+        fields = [
+            "id", "title", "message", "created_at", "posted_by",
+            "media", "media_type", "media_url",
+        ]
+        read_only_fields = ["created_at", "media_type"]
 
     def get_posted_by(self, obj):
         if obj.created_by and hasattr(obj.created_by, "profile"):
             return obj.created_by.profile.full_name
         return ""
+
+    def get_media_url(self, obj):
+        if not obj.media:
+            return ""
+        request = self.context.get("request")
+        url = obj.media.url
+        return request.build_absolute_uri(url) if request else url
+
+    def validate_media(self, f):
+        if f is None:
+            return f
+        ctype = getattr(f, "content_type", "") or ""
+        if not (ctype.startswith("image/") or ctype.startswith("video/")):
+            raise serializers.ValidationError("Only pictures and videos are allowed.")
+        if f.size > 50 * 1024 * 1024:
+            raise serializers.ValidationError("That file is bigger than 50 MB.")
+        return f
 
 
 class AttendanceSerializer(serializers.ModelSerializer):

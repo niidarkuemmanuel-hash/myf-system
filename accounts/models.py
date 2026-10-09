@@ -45,6 +45,8 @@ def create_profile(sender, instance, created, **kwargs):
 class Announcement(models.Model):
     title = models.CharField(max_length=200)
     message = models.TextField(blank=True)
+    media = models.FileField(upload_to="announcements/", blank=True, null=True)
+    media_type = models.CharField(max_length=10, blank=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
     )

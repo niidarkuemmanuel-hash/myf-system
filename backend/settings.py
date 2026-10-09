@@ -137,3 +137,7 @@ REST_FRAMEWORK = {
 # Development only: lets your HTML page talk to this server.
 # We'll restrict this before putting the site online.
 CORS_ALLOW_ALL_ORIGINS = True
+
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"

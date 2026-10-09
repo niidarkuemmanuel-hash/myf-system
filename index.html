@@ -3,528 +3,942 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MYF Digital Management System</title>
+    <meta name="theme-color" content="#231b68" />
+    <title>MYF Ghana</title>
+    <link rel="icon" href="logo.jpg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Public+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
         --navy: #231b68;
+        --ink: #14104a;
         --yellow: #fdf405;
+        --paper: #f5f4fb;
+        --line: #dad7ee;
+        --muted: #5d5a85;
+        --ok: #0a7a2f;
+        --bad: #b00020;
+        --font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+        --font-body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
       }
-      body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        background: #f5f5f5;
+      * { box-sizing: border-box; }
+      html { -webkit-text-size-adjust: 100%; }
+      body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
+      h1, h2, h3 { font-family: var(--font-display); margin: 0; }
+      [hidden] { display: none !important; }
+      button { font: inherit; cursor: pointer; }
+      :focus-visible { outline: 3px solid var(--navy); outline-offset: 2px; }
+      .auth :focus-visible, .topbar :focus-visible { outline-color: var(--yellow); }
+
+      /* ---------- Forms and buttons ---------- */
+      label { display: block; margin-top: 14px; font-weight: 600; font-size: 14px; }
+      input, textarea, select { width: 100%; margin-top: 6px; padding: 11px 12px; border: 1px solid #b9b5de; border-radius: 8px; font: inherit; background: #fff; color: var(--ink); }
+      input:focus, textarea:focus, select:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(35, 27, 104, 0.18); outline: none; }
+      input[type="checkbox"] { width: 20px; height: 20px; margin: 0; accent-color: var(--navy); }
+      input[type="file"] { padding: 9px; }
+      .btn { border: 0; border-radius: 8px; padding: 10px 18px; font-weight: 700; font-size: 15px; }
+      .btn.primary { background: var(--navy); color: var(--yellow); }
+      .btn.primary:hover { background: var(--ink); }
+      .btn.line { background: transparent; color: var(--navy); border: 1.5px solid var(--navy); }
+      .btn.small { padding: 6px 12px; font-size: 13px; }
+      .btn.wide { width: 100%; margin-top: 22px; padding: 13px; }
+      .btn[disabled] { opacity: 0.6; cursor: default; }
+      .link-danger { background: none; border: 0; padding: 0; color: var(--bad); font-weight: 600; font-size: 13px; }
+      .msg { margin-top: 12px; font-size: 14px; min-height: 1.2em; }
+      .msg.bad { color: var(--bad); }
+      .msg.good { color: var(--ok); }
+      .hint { color: var(--muted); font-size: 13px; margin: 10px 0 0; }
+
+      /* ---------- Login screen ---------- */
+      .auth { min-height: 100vh; background: var(--navy); color: #fff; display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 40px; align-items: center; padding: 40px clamp(20px, 6vw, 80px); }
+      .auth-logo { width: 84px; height: 84px; border-radius: 50%; background: #fff; display: block; }
+      .auth-hero h1 { margin-top: 26px; font-size: clamp(2.5rem, 6.5vw, 4.6rem); font-weight: 800; line-height: 1.02; letter-spacing: -0.02em; color: var(--yellow); }
+      .auth-hero h1 span { display: block; }
+      .auth-hero p { margin: 22px 0 0; max-width: 34ch; color: #d9d6f5; font-size: 18px; }
+      .auth-card { background: #fff; color: var(--ink); border-radius: 16px; padding: 24px; width: 100%; max-width: 440px; justify-self: end; }
+      .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: var(--paper); padding: 4px; border-radius: 10px; }
+      .seg button { border: 0; background: transparent; padding: 10px; border-radius: 8px; font-weight: 700; color: var(--muted); }
+      .seg button.on { background: var(--navy); color: #fff; }
+      @media (min-width: 821px) {
+        .auth-hero h1 span:nth-child(2) { padding-left: 0.45em; }
+        .auth-hero h1 span:nth-child(3) { padding-left: 0.9em; }
       }
-      header {
-        background: var(--navy);
-        color: white;
-        padding: 24px;
-        text-align: center;
-        border-bottom: 6px solid var(--yellow);
+      @media (max-width: 820px) {
+        .auth { grid-template-columns: 1fr; gap: 28px; padding: 28px 20px; align-items: start; }
+        .auth-card { justify-self: stretch; max-width: none; }
+        .auth-logo { width: 64px; height: 64px; }
+        .auth-hero h1 { margin-top: 18px; }
+        .auth-hero p { font-size: 16px; }
       }
-      header img {
-        width: 110px;
-        height: 110px;
-        border-radius: 50%;
-        background: white;
+
+      /* ---------- Top bar and tabs ---------- */
+      .topbar { background: var(--navy); color: #fff; position: sticky; top: 0; z-index: 10; }
+      .topbar-in { max-width: 960px; margin: 0 auto; padding: 12px 16px 6px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+      .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+      .brand img { width: 42px; height: 42px; border-radius: 50%; background: #fff; flex: none; }
+      .brand strong { display: block; font-family: var(--font-display); font-size: 18px; line-height: 1.1; }
+      .brand span { display: block; color: var(--yellow); font-size: 13px; }
+      .user { display: flex; align-items: center; gap: 12px; }
+      .user-name { font-size: 14px; color: #d9d6f5; }
+      .ghost { background: transparent; color: #fff; border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 8px; padding: 6px 12px; font-size: 14px; font-weight: 600; }
+      .ghost:hover { background: rgba(255, 255, 255, 0.12); }
+      .tabs { max-width: 960px; margin: 0 auto; padding: 0 12px; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+      .tabs::-webkit-scrollbar { display: none; }
+      .tabs button { position: relative; background: none; border: 0; color: #c9c6ee; padding: 12px 14px 18px; font-weight: 600; font-size: 15px; white-space: nowrap; }
+      .tabs button:hover { color: #fff; }
+      .tabs button.active { color: var(--yellow); }
+      .tabs button.active::after { content: ""; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); border-style: solid; border-width: 0 9px 9px 9px; border-color: transparent transparent var(--paper) transparent; }
+      .badge { display: inline-block; margin-left: 6px; min-width: 20px; padding: 0 6px; border-radius: 10px; background: var(--yellow); color: var(--ink); font-size: 12px; font-weight: 700; text-align: center; }
+      @media (max-width: 560px) { .user-name { display: none; } }
+
+      /* ---------- Page content ---------- */
+      main { max-width: 960px; margin: 0 auto; padding: 24px 16px 90px; }
+      .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 16px; }
+      .panel-head h2 { font-size: clamp(1.7rem, 4vw, 2.2rem); letter-spacing: -0.01em; line-height: 1.1; }
+      .panel-sub { color: var(--muted); font-size: 14px; margin-top: 2px; }
+      .sub { font-size: 21px; margin: 32px 0 12px; }
+      .sheet { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 4px 18px 20px; margin: 0 0 22px; }
+      .sheet h3 { font-size: 19px; margin-top: 16px; }
+
+      .notice { display: flex; gap: 14px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+      .notice-date { flex: none; width: 56px; height: 64px; background: var(--navy); color: #fff; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+      .notice-date b { font: 800 26px/1 var(--font-display); color: var(--yellow); }
+      .notice-date span { font-size: 13px; margin-top: 2px; }
+      .notice-body { flex: 1; min-width: 0; }
+      .notice h3 { font-size: 19px; line-height: 1.25; }
+      .notice p { margin: 6px 0 0; white-space: pre-wrap; max-width: 65ch; }
+      .notice img, .notice video { display: block; max-width: 100%; max-height: 420px; border-radius: 8px; margin-top: 10px; }
+      .notice-meta { margin-top: 10px; color: var(--muted); font-size: 13px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+
+      .people { list-style: none; margin: 0; padding: 0; background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+      .person { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-top: 1px solid var(--line); }
+      .person:first-child { border-top: 0; }
+      .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--navy); color: var(--yellow); display: grid; place-items: center; font: 700 14px var(--font-display); flex: none; }
+      .person-main { flex: 1; min-width: 0; }
+      .person-main strong { display: block; }
+      .person-main span { color: var(--muted); font-size: 14px; }
+      .person a { color: var(--navy); font-weight: 600; text-decoration: none; white-space: nowrap; }
+      .pill { font-size: 13px; font-weight: 600; padding: 3px 10px; border-radius: 99px; background: #e3f4e8; color: var(--ok); white-space: nowrap; }
+      .pill.off { background: var(--paper); color: var(--muted); }
+
+      .summary { display: flex; align-items: baseline; gap: 10px; margin: 4px 0 14px; }
+      .summary b { font: 800 56px/1 var(--font-display); color: var(--navy); }
+      .summary span { color: var(--muted); }
+
+      .checks { background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-top: 14px; }
+      .check { display: flex; align-items: center; gap: 12px; margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-weight: 500; font-size: 16px; cursor: pointer; }
+      .check:first-child { border-top: 0; }
+      .row-actions { display: flex; gap: 10px; align-items: center; margin-top: 14px; flex-wrap: wrap; }
+
+      .stats { display: grid; grid-template-columns: repeat(3, 1fr); background: #fff; border: 1px solid var(--line); border-radius: 12px; }
+      .stat { padding: 18px 16px; border-left: 1px solid var(--line); }
+      .stat:first-child { border-left: 0; }
+      .stat b { display: block; font: 800 34px/1.1 var(--font-display); color: var(--navy); }
+      .stat span { color: var(--muted); font-size: 14px; }
+      .bars { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 6px 16px; }
+      .bar-row { padding: 12px 0; border-top: 1px solid var(--line); }
+      .bar-row:first-child { border-top: 0; }
+      .bar-top { display: flex; justify-content: space-between; gap: 10px; font-size: 15px; }
+      .bar-top span { color: var(--muted); }
+      .bar { height: 8px; background: var(--line); border-radius: 4px; margin-top: 8px; overflow: hidden; }
+      .bar i { display: block; height: 100%; background: var(--navy); border-radius: 4px; }
+
+      .empty { padding: 28px 18px; border: 1.5px dashed #b9b5de; border-radius: 12px; text-align: center; color: var(--muted); }
+      .empty strong { display: block; color: var(--ink); font-family: var(--font-display); font-size: 18px; margin-bottom: 4px; }
+      .empty p { margin: 0; }
+
+      .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); background: var(--ink); color: #fff; padding: 11px 18px; border-radius: 8px; font-size: 15px; font-weight: 500; opacity: 0; pointer-events: none; z-index: 50; max-width: calc(100vw - 32px); }
+      .toast.show { opacity: 1; transform: translate(-50%, 0); }
+      .toast.bad { background: var(--bad); }
+
+      @media (max-width: 560px) {
+        .notice { padding: 12px; gap: 12px; }
+        .notice-date { width: 50px; height: 58px; }
+        .stat { padding: 14px 10px; }
+        .stat b { font-size: 26px; }
       }
-      header h1 {
-        margin: 12px 0 4px;
-      }
-      header p {
-        margin: 0;
-        color: var(--yellow);
-        font-weight: bold;
-      }
-      main {
-        max-width: 480px;
-        margin: 24px auto;
-        background: white;
-        padding: 24px;
-        border-radius: 8px;
-      }
-      h2 {
-        color: var(--navy);
-        border-bottom: 3px solid var(--yellow);
-        padding-bottom: 4px;
-      }
-      label {
-        display: block;
-        margin-top: 12px;
-        font-weight: bold;
-      }
-      input,
-      select,
-      textarea {
-        width: 100%;
-        padding: 8px;
-        margin-top: 4px;
-        box-sizing: border-box;
-        font-family: Arial, sans-serif;
-      }
-      input[type="checkbox"] {
-        width: auto;
-        margin-right: 8px;
-      }
-      .stats {
-        display: flex;
-        gap: 12px;
-        margin-top: 12px;
-      }
-      .stat {
-        flex: 1;
-        background: #f5f5f5;
-        padding: 12px;
-        border-radius: 6px;
-        text-align: center;
-      }
-      .stat strong {
-        display: block;
-        font-size: 24px;
-        color: var(--navy);
-      }
-      button {
-        margin-top: 20px;
-        padding: 10px 20px;
-        background: var(--navy);
-        color: var(--yellow);
-        font-weight: bold;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-      .announcement {
-        background: #fffde0;
-        border-left: 6px solid var(--yellow);
-        padding: 12px;
-        margin-top: 12px;
-        border-radius: 4px;
-      }
-      .announcement h4 {
-        margin: 0 0 4px;
-        color: var(--navy);
-      }
-      .announcement p {
-        margin: 0 0 8px;
-        white-space: pre-wrap;
-      }
-      .announcement small {
-        color: #666;
-      }
-      .announcement img,
-      .announcement video {
-        display: block;
-        max-width: 100%;
-        border-radius: 6px;
-        margin: 8px 0;
-      }
-      .announcement button {
-        margin-top: 8px;
-        padding: 4px 10px;
-        font-size: 12px;
-        display: block;
-      }
-      .note {
-        color: #a00;
-        font-size: 13px;
-      }
-      #mediaStatus {
-        font-size: 13px;
-        color: #555;
-        margin-top: 6px;
+      @media (prefers-reduced-motion: no-preference) {
+        .auth-hero h1 span { opacity: 0; transform: translateY(14px); animation: rise 0.6s ease forwards; }
+        .auth-hero h1 span:nth-child(2) { animation-delay: 0.12s; }
+        .auth-hero h1 span:nth-child(3) { animation-delay: 0.24s; }
+        @keyframes rise { to { opacity: 1; transform: none; } }
+        .toast { transition: opacity 0.2s, transform 0.2s; }
       }
     </style>
   </head>
   <body>
-    <header>
-      <img src="logo.jpg" alt="MYF Ghana logo" />
-      <h1>Methodist Youth Fellowship</h1>
-      <p>We Work. We Witness. We Worship.</p>
-    </header>
-    <main>
-      <h2>Announcements</h2>
-      <div id="announcementList"></div>
+    <!-- ================= LOGIN / SIGN UP ================= -->
+    <div id="authView" class="auth">
+      <section class="auth-hero">
+        <img class="auth-logo" src="logo.jpg" alt="MYF Ghana logo" />
+        <h1><span>We work.</span><span>We witness.</span><span>We worship.</span></h1>
+        <p>Methodist Youth Fellowship, Ghana. Log in to see notices, your attendance and who is in the fellowship.</p>
+      </section>
 
-      <h3>Post an Announcement</h3>
-      <label>Title</label>
-      <input
-        type="text"
-        id="annTitle"
-        placeholder="e.g. Fellowship this Friday"
-      />
-      <label>Message</label>
-      <textarea
-        id="annMessage"
-        rows="3"
-        placeholder="Write the announcement here"
-      ></textarea>
-      <label>Picture or Video (optional)</label>
-      <input type="file" id="annMedia" accept="image/*,video/*" />
-      <div id="mediaStatus"></div>
-      <button type="button" id="postAnnouncement">Post Announcement</button>
-
-      <h2>Member Registration</h2>
-      <form id="regForm">
-        <label>Full Name</label>
-        <input
-          type="text"
-          id="name"
-          placeholder="Enter your full name"
-          required
-        />
-        <label>Phone Number</label>
-        <input
-          type="tel"
-          id="phone"
-          placeholder="Enter your phone number"
-          required
-        />
-        <label>Level / Occupation</label>
-        <input type="text" id="level" placeholder="e.g. Level 300 or Teacher" />
-        <label>Role</label>
-        <select id="role">
-          <option>Member</option>
-          <option>Executive</option>
-        </select>
-        <button type="submit">Register</button>
-      </form>
-
-      <h2>Registered Members (<span id="count">0</span>)</h2>
-      <ul id="memberList"></ul>
-
-      <h2>Take Attendance</h2>
-      <label>Event / Meeting</label>
-      <input type="text" id="eventName" placeholder="e.g. Friday Fellowship" />
-      <label>Date</label>
-      <input type="date" id="eventDate" />
-      <div id="attendanceList"></div>
-      <button type="button" id="saveAttendance">Save Attendance</button>
-
-      <h2>Past Attendance</h2>
-      <ul id="attendanceHistory"></ul>
-
-      <h2>Dashboard</h2>
-      <div class="stats">
-        <div class="stat"><strong id="totalMembers">0</strong>Members</div>
-        <div class="stat"><strong id="totalMeetings">0</strong>Meetings</div>
-        <div class="stat">
-          <strong id="avgAttendance">0</strong>Avg. present
+      <section class="auth-card">
+        <div class="seg" role="tablist">
+          <button type="button" id="showLogin" class="on" role="tab">Log in</button>
+          <button type="button" id="showSignup" role="tab">Sign up</button>
         </div>
-      </div>
-      <h3>Attendance by Member</h3>
-      <ul id="memberStats"></ul>
-    </main>
+
+        <form id="loginForm">
+          <label for="loginUser">Username</label>
+          <input id="loginUser" autocomplete="username" autocapitalize="none" required />
+          <label for="loginPass">Password</label>
+          <input id="loginPass" type="password" autocomplete="current-password" required />
+          <button class="btn primary wide" id="loginBtn" type="submit">Log in</button>
+        </form>
+
+        <form id="signupForm" hidden>
+          <label for="suName">Full name</label>
+          <input id="suName" autocomplete="name" required />
+          <label for="suUser">Username</label>
+          <input id="suUser" autocapitalize="none" required />
+          <label for="suPass">Password (at least 6 characters)</label>
+          <input id="suPass" type="password" minlength="6" autocomplete="new-password" required />
+          <label for="suPhone">Phone number</label>
+          <input id="suPhone" type="tel" required />
+          <label for="suLevel">Level or occupation (optional)</label>
+          <input id="suLevel" placeholder="e.g. Level 300 or Teacher" />
+          <button class="btn primary wide" id="signupBtn" type="submit">Create account</button>
+          <p class="hint">An executive approves new accounts before you can log in.</p>
+        </form>
+
+        <div id="authMsg" class="msg" role="alert"></div>
+      </section>
+    </div>
+
+    <!-- ================= APP ================= -->
+    <div id="appView" hidden>
+      <header class="topbar">
+        <div class="topbar-in">
+          <div class="brand">
+            <img src="logo.jpg" alt="" />
+            <div>
+              <strong>MYF Ghana</strong>
+              <span id="whoamiRole"></span>
+            </div>
+          </div>
+          <div class="user">
+            <span class="user-name" id="whoami"></span>
+            <button class="ghost" id="logoutBtn" type="button">Log out</button>
+          </div>
+        </div>
+        <nav class="tabs" id="tabs" role="tablist">
+          <button type="button" data-tab="notices" role="tab">Notices</button>
+          <button type="button" data-tab="members" role="tab">Members</button>
+          <button type="button" data-tab="attendance" role="tab">Attendance</button>
+          <button type="button" data-tab="approvals" role="tab" class="staff-only">Approvals<span class="badge" id="pendingBadge" hidden>0</span></button>
+          <button type="button" data-tab="dashboard" role="tab" class="staff-only">Dashboard</button>
+        </nav>
+      </header>
+
+      <main>
+        <!-- Notices -->
+        <section class="panel" id="panel-notices">
+          <div class="panel-head">
+            <h2>Notices</h2>
+            <button id="postToggle" class="btn primary staff-only" type="button">Post a notice</button>
+          </div>
+
+          <div id="postBox" class="sheet" hidden>
+            <h3>New notice</h3>
+            <label for="annTitle">Title</label>
+            <input id="annTitle" placeholder="e.g. Fellowship this Friday" />
+            <label for="annMessage">Message</label>
+            <textarea id="annMessage" rows="3"></textarea>
+            <label for="annMedia">Picture or video (optional)</label>
+            <input type="file" id="annMedia" accept="image/*,video/*" />
+            <div id="annMediaInfo" class="hint"></div>
+            <div class="row-actions">
+              <button class="btn primary" id="postAnnouncement" type="button">Post notice</button>
+            </div>
+          </div>
+
+          <div id="announcementList"></div>
+        </section>
+
+        <!-- Members -->
+        <section class="panel" id="panel-members" hidden>
+          <div class="panel-head">
+            <div>
+              <h2>Members</h2>
+              <div class="panel-sub" id="memberCount"></div>
+            </div>
+            <button id="registerToggle" class="btn primary staff-only" type="button">Add a member</button>
+          </div>
+
+          <form id="registerForm" class="sheet" hidden>
+            <h3>Add a member</h3>
+            <label for="rgName">Full name</label>
+            <input id="rgName" required />
+            <label for="rgUser">Username</label>
+            <input id="rgUser" autocapitalize="none" required />
+            <label for="rgPass">Password (at least 6 characters)</label>
+            <input id="rgPass" type="password" minlength="6" required />
+            <label for="rgPhone">Phone number</label>
+            <input id="rgPhone" type="tel" required />
+            <label for="rgLevel">Level or occupation (optional)</label>
+            <input id="rgLevel" />
+            <div class="row-actions">
+              <button class="btn primary" id="registerBtn" type="submit">Add member</button>
+            </div>
+            <p class="hint">Members you add are approved straight away.</p>
+          </form>
+
+          <ul class="people" id="memberList"></ul>
+        </section>
+
+        <!-- Attendance -->
+        <section class="panel" id="panel-attendance" hidden>
+          <div class="panel-head"><h2>My attendance</h2></div>
+          <div id="myAttendance"></div>
+
+          <div class="staff-only">
+            <h3 class="sub">Take attendance</h3>
+            <div class="sheet">
+              <label for="eventName">Event or meeting</label>
+              <input id="eventName" placeholder="e.g. Friday Fellowship" />
+              <label for="eventDate">Date</label>
+              <input type="date" id="eventDate" />
+              <div class="checks" id="attendanceList"></div>
+              <div class="row-actions">
+                <button class="btn line small" id="selectAll" type="button">Select all</button>
+                <button class="btn primary" id="saveAttendance" type="button">Save attendance</button>
+              </div>
+            </div>
+
+            <h3 class="sub">Past meetings</h3>
+            <ul class="people" id="attendanceHistory"></ul>
+          </div>
+        </section>
+
+        <!-- Approvals -->
+        <section class="panel" id="panel-approvals" hidden>
+          <div class="panel-head">
+            <div>
+              <h2>Waiting for approval</h2>
+              <div class="panel-sub">People who signed up and cannot log in yet.</div>
+            </div>
+          </div>
+          <div id="pendingList"></div>
+        </section>
+
+        <!-- Dashboard -->
+        <section class="panel" id="panel-dashboard" hidden>
+          <div class="panel-head"><h2>Dashboard</h2></div>
+          <div class="stats">
+            <div class="stat"><b id="totalMembers">0</b><span>Members</span></div>
+            <div class="stat"><b id="totalMeetings">0</b><span>Meetings</span></div>
+            <div class="stat"><b id="avgAttendance">0</b><span>Average present</span></div>
+          </div>
+          <h3 class="sub">Attendance by member</h3>
+          <div id="memberStats"></div>
+        </section>
+      </main>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
     <script>
-      const form = document.getElementById("regForm");
-      const list = document.getElementById("memberList");
-      const count = document.getElementById("count");
-      const attendanceList = document.getElementById("attendanceList");
-      const history = document.getElementById("attendanceHistory");
-      const announcementList = document.getElementById("announcementList");
-      const mediaStatus = document.getElementById("mediaStatus");
+      const API = "http://127.0.0.1:8000/api";
+      let token = localStorage.getItem("myfToken");
+      let me = null;
+      try { me = JSON.parse(localStorage.getItem("myfMe")); } catch (e) {}
+      let membersCache = [];
+      let attendanceRecords = [];
 
-      let members = JSON.parse(localStorage.getItem("myfMembers")) || [];
-      let records = JSON.parse(localStorage.getItem("myfAttendance")) || [];
-      let announcements =
-        JSON.parse(localStorage.getItem("myfAnnouncements")) || [];
+      const $ = (id) => document.getElementById(id);
+      const isStaff = () => !!me && (me.role === "executive" || me.role === "treasurer");
+      const ROLE_LABELS = { member: "Member", executive: "Executive", treasurer: "Treasurer" };
+      const roleLabel = (r) => ROLE_LABELS[r] || r;
 
-      // ---------- Video storage (IndexedDB) ----------
-      function openDB() {
-        return new Promise((resolve, reject) => {
-          if (!window.indexedDB)
-            return reject(new Error("This browser cannot store videos."));
-          const req = indexedDB.open("myfMedia", 1);
-          req.onupgradeneeded = () => req.result.createObjectStore("media");
-          req.onsuccess = () => resolve(req.result);
-          req.onerror = () =>
-            reject(new Error("This browser cannot store videos."));
-        });
+      function initials(name) {
+        return (name || "?").split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("");
       }
-      async function saveMedia(id, file) {
-        const db = await openDB();
-        return new Promise((resolve, reject) => {
-          const tx = db.transaction("media", "readwrite");
-          tx.objectStore("media").put(file, id);
-          tx.oncomplete = () => resolve();
-          tx.onerror = () => reject(new Error("Could not save the video."));
-        });
+
+      function emptyState(title, hint) {
+        const d = document.createElement("div");
+        d.className = "empty";
+        const s = document.createElement("strong");
+        s.textContent = title;
+        const p = document.createElement("p");
+        p.textContent = hint;
+        d.append(s, p);
+        return d;
       }
-      async function getMedia(id) {
-        const db = await openDB();
-        return new Promise((resolve, reject) => {
-          const req = db.transaction("media").objectStore("media").get(id);
-          req.onsuccess = () => resolve(req.result);
-          req.onerror = () => reject(new Error("Could not load the video."));
-        });
+
+      let toastTimer;
+      function toast(text, isError) {
+        const t = $("toast");
+        t.textContent = text;
+        t.className = "toast show" + (isError ? " bad" : "");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => { t.className = "toast"; }, 3500);
       }
-      async function deleteMedia(id) {
+
+      function authMessage(text, isError) {
+        const m = $("authMsg");
+        m.textContent = text;
+        m.className = "msg " + (isError ? "bad" : "good");
+      }
+
+      async function busy(btn, fn) {
+        btn.disabled = true;
+        try { await fn(); } finally { btn.disabled = false; }
+      }
+
+      function formatError(data) {
+        if (!data) return "Something went wrong.";
+        if (data.error) return data.error;
+        if (data.detail) return data.detail;
+        const parts = [];
+        for (const key in data) {
+          const val = Array.isArray(data[key]) ? data[key].join(" ") : String(data[key]);
+          parts.push(key + ": " + val);
+        }
+        return parts.join(" | ") || "Something went wrong.";
+      }
+
+      async function api(path, options = {}, useAuth = true) {
+        const headers = {};
+        if (!(options.body instanceof FormData)) headers["Content-Type"] = "application/json";
+        if (useAuth && token) headers["Authorization"] = "Token " + token;
+        let res;
         try {
-          const db = await openDB();
-          db.transaction("media", "readwrite").objectStore("media").delete(id);
-        } catch (err) {}
+          res = await fetch(API + path, { ...options, headers });
+        } catch (err) {
+          throw new Error("Cannot reach the server. Make sure it is running.");
+        }
+        let data = null;
+        if (res.status !== 204) {
+          try { data = await res.json(); } catch (e) {}
+        }
+        if (!res.ok) {
+          if (res.status === 401 && useAuth) {
+            logout();
+            throw new Error("Please log in again.");
+          }
+          throw new Error(formatError(data));
+        }
+        return data;
       }
 
-      // ---------- Picture shrinking ----------
-      function compressImage(file) {
-        return new Promise((resolve, reject) => {
-          const url = URL.createObjectURL(file);
-          const img = new Image();
-          img.onload = () => {
-            const scale = Math.min(1, 900 / img.width);
-            const canvas = document.createElement("canvas");
-            canvas.width = Math.round(img.width * scale);
-            canvas.height = Math.round(img.height * scale);
-            canvas
-              .getContext("2d")
-              .drawImage(img, 0, 0, canvas.width, canvas.height);
-            URL.revokeObjectURL(url);
-            resolve(canvas.toDataURL("image/jpeg", 0.8));
-          };
-          img.onerror = () =>
-            reject(
-              new Error(
-                "This picture format is not supported. Please use a JPG or PNG.",
-              ),
-            );
-          img.src = url;
+      // ---------- Login and sign up ----------
+      function showAuthTab(which) {
+        $("loginForm").hidden = which !== "login";
+        $("signupForm").hidden = which !== "signup";
+        $("showLogin").classList.toggle("on", which === "login");
+        $("showSignup").classList.toggle("on", which === "signup");
+        $("authMsg").textContent = "";
+      }
+      $("showLogin").addEventListener("click", () => showAuthTab("login"));
+      $("showSignup").addEventListener("click", () => showAuthTab("signup"));
+
+      $("loginForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        busy($("loginBtn"), async () => {
+          try {
+            const data = await api("/login/", {
+              method: "POST",
+              body: JSON.stringify({ username: $("loginUser").value.trim(), password: $("loginPass").value }),
+            }, false);
+            token = data.token;
+            me = data.profile;
+            localStorage.setItem("myfToken", token);
+            localStorage.setItem("myfMe", JSON.stringify(me));
+            $("loginForm").reset();
+            showApp();
+          } catch (err) {
+            authMessage(err.message, true);
+          }
         });
-      }
-
-      // ---------- Announcements ----------
-      async function showAnnouncements() {
-        announcementList.innerHTML = "";
-        if (announcements.length === 0) {
-          announcementList.textContent = "No announcements yet.";
-          return;
-        }
-        const items = announcements
-          .map((a, i) => ({ ...a, index: i }))
-          .reverse();
-
-        for (const a of items) {
-          const box = document.createElement("div");
-          box.className = "announcement";
-
-          const title = document.createElement("h4");
-          title.textContent = a.title;
-          box.appendChild(title);
-
-          if (a.message) {
-            const msg = document.createElement("p");
-            msg.textContent = a.message;
-            box.appendChild(msg);
-          }
-
-          if (a.image) {
-            const img = document.createElement("img");
-            img.src = a.image;
-            img.alt = a.title;
-            box.appendChild(img);
-          } else if (a.mediaId) {
-            try {
-              const file = await getMedia(a.mediaId);
-              if (!file) throw new Error("missing");
-              const url = URL.createObjectURL(file);
-              let el;
-              if (a.mediaType === "video") {
-                el = document.createElement("video");
-                el.controls = true;
-              } else {
-                el = document.createElement("img");
-                el.alt = a.title;
-              }
-              el.src = url;
-              box.appendChild(el);
-            } catch (err) {
-              const note = document.createElement("p");
-              note.className = "note";
-              note.textContent =
-                "(The picture or video for this post could not be loaded.)";
-              box.appendChild(note);
-            }
-          }
-
-          const date = document.createElement("small");
-          date.textContent = "Posted " + a.date;
-          box.appendChild(date);
-
-          const del = document.createElement("button");
-          del.textContent = "Delete";
-          del.addEventListener("click", async () => {
-            if (a.mediaId) await deleteMedia(a.mediaId);
-            announcements.splice(a.index, 1);
-            localStorage.setItem(
-              "myfAnnouncements",
-              JSON.stringify(announcements),
-            );
-            showAnnouncements();
-          });
-          box.appendChild(del);
-
-          announcementList.appendChild(box);
-        }
-      }
-
-      document.getElementById("annMedia").addEventListener("change", (e) => {
-        const file = e.target.files[0];
-        mediaStatus.textContent = file
-          ? "Selected: " +
-            file.name +
-            " (" +
-            (file.size / 1048576).toFixed(1) +
-            " MB)"
-          : "";
       });
 
-      document
-        .getElementById("postAnnouncement")
-        .addEventListener("click", async () => {
-          const title = document.getElementById("annTitle").value.trim();
-          const message = document.getElementById("annMessage").value.trim();
-          const file = document.getElementById("annMedia").files[0];
-
-          if (!title || (!message && !file)) {
-            alert("Please enter a title and a message or a picture/video.");
-            return;
-          }
-          if (file && file.size > 50 * 1048576) {
-            alert(
-              "That file is bigger than 50 MB. Please choose a smaller one.",
-            );
-            return;
-          }
-
-          const post = {
-            title,
-            message,
-            date: new Date().toLocaleDateString(),
-          };
-
+      $("signupForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        busy($("signupBtn"), async () => {
           try {
-            if (file) {
-              if (file.type.startsWith("video")) {
-                const mediaId = "media-" + Date.now();
-                await saveMedia(mediaId, file);
-                post.mediaId = mediaId;
-                post.mediaType = "video";
-              } else {
-                post.image = await compressImage(file);
-              }
-            }
-            const updated = [...announcements, post];
-            localStorage.setItem("myfAnnouncements", JSON.stringify(updated));
-            announcements = updated;
+            const data = await api("/signup/", {
+              method: "POST",
+              body: JSON.stringify({
+                full_name: $("suName").value.trim(),
+                username: $("suUser").value.trim(),
+                password: $("suPass").value,
+                phone: $("suPhone").value.trim(),
+                level: $("suLevel").value.trim(),
+              }),
+            }, false);
+            $("signupForm").reset();
+            showAuthTab("login");
+            authMessage(data.message, false);
           } catch (err) {
-            alert("Could not post: " + err.message);
-            return;
+            authMessage(err.message, true);
+          }
+        });
+      });
+
+      function logout() {
+        token = null;
+        me = null;
+        localStorage.removeItem("myfToken");
+        localStorage.removeItem("myfMe");
+        $("appView").hidden = true;
+        $("authView").hidden = false;
+        showAuthTab("login");
+      }
+      $("logoutBtn").addEventListener("click", logout);
+
+      // ---------- Tabs ----------
+      function showTab(name) {
+        document.querySelectorAll(".panel").forEach((p) => { p.hidden = p.id !== "panel-" + name; });
+        document.querySelectorAll("#tabs button").forEach((b) => {
+          const on = b.dataset.tab === name;
+          b.classList.toggle("active", on);
+          b.setAttribute("aria-selected", on ? "true" : "false");
+        });
+        window.scrollTo(0, 0);
+      }
+      $("tabs").addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-tab]");
+        if (b) showTab(b.dataset.tab);
+      });
+
+      async function showApp() {
+        $("authView").hidden = true;
+        $("appView").hidden = false;
+        $("whoami").textContent = me.full_name;
+        $("whoamiRole").textContent = roleLabel(me.role);
+        document.querySelectorAll(".staff-only").forEach((el) => { el.hidden = !isStaff(); });
+        if (!$("eventDate").value) $("eventDate").value = new Date().toISOString().slice(0, 10);
+        showTab("notices");
+        await loadAll();
+      }
+
+      async function loadAll() {
+        const jobs = [loadAnnouncements, loadMembers, loadMyAttendance];
+        if (isStaff()) jobs.push(loadPending, loadAttendance);
+        for (const job of jobs) {
+          try { await job(); } catch (err) { console.error(err); }
+        }
+        updateDashboard();
+      }
+
+      // ---------- Notices ----------
+      async function loadAnnouncements() {
+        const items = await api("/announcements/");
+        const box = $("announcementList");
+        box.innerHTML = "";
+        if (items.length === 0) {
+          box.appendChild(emptyState(
+            "No notices yet.",
+            isStaff() ? "Use Post a notice to share the first one." : "News from the executives will show up here."
+          ));
+          return;
+        }
+        items.forEach((a) => {
+          const art = document.createElement("article");
+          art.className = "notice";
+
+          const d = new Date(a.created_at);
+          const date = document.createElement("div");
+          date.className = "notice-date";
+          const day = document.createElement("b");
+          day.textContent = d.getDate();
+          const mon = document.createElement("span");
+          mon.textContent = d.toLocaleString("en-GB", { month: "short" });
+          date.append(day, mon);
+
+          const body = document.createElement("div");
+          body.className = "notice-body";
+          const h = document.createElement("h3");
+          h.textContent = a.title;
+          body.appendChild(h);
+
+          if (a.message) {
+            const p = document.createElement("p");
+            p.textContent = a.message;
+            body.appendChild(p);
           }
 
-          showAnnouncements();
-          document.getElementById("annTitle").value = "";
-          document.getElementById("annMessage").value = "";
-          document.getElementById("annMedia").value = "";
-          mediaStatus.textContent = "";
+          if (a.media_url) {
+            let el;
+            if (a.media_type === "video") {
+              el = document.createElement("video");
+              el.controls = true;
+            } else {
+              el = document.createElement("img");
+              el.alt = a.title;
+            }
+            el.src = a.media_url;
+            body.appendChild(el);
+          }
+
+          const meta = document.createElement("div");
+          meta.className = "notice-meta";
+          const by = document.createElement("span");
+          by.textContent = a.posted_by ? "Posted by " + a.posted_by : "Posted";
+          meta.appendChild(by);
+          if (isStaff()) {
+            const del = document.createElement("button");
+            del.className = "link-danger";
+            del.type = "button";
+            del.textContent = "Delete";
+            del.addEventListener("click", async () => {
+              if (!confirm("Delete this notice?")) return;
+              try {
+                await api("/announcements/" + a.id + "/", { method: "DELETE" });
+                toast("Notice deleted.");
+                loadAnnouncements();
+              } catch (err) {
+                toast(err.message, true);
+              }
+            });
+            meta.appendChild(del);
+          }
+          body.appendChild(meta);
+
+          art.append(date, body);
+          box.appendChild(art);
         });
+      }
 
-      // ---------- Dashboard, members, attendance ----------
-      function showDashboard() {
-        document.getElementById("totalMembers").textContent = members.length;
-        document.getElementById("totalMeetings").textContent = records.length;
+      $("postToggle").addEventListener("click", () => {
+        const box = $("postBox");
+        box.hidden = !box.hidden;
+        $("postToggle").textContent = box.hidden ? "Post a notice" : "Close";
+        if (!box.hidden) $("annTitle").focus();
+      });
 
-        const total = records.reduce((sum, r) => sum + r.present.length, 0);
-        const avg = records.length ? (total / records.length).toFixed(1) : 0;
-        document.getElementById("avgAttendance").textContent = avg;
+      $("annMedia").addEventListener("change", () => {
+        const f = $("annMedia").files[0];
+        $("annMediaInfo").textContent = f ? "Selected: " + f.name + " (" + (f.size / 1048576).toFixed(1) + " MB)" : "";
+      });
 
-        const stats = document.getElementById("memberStats");
-        stats.innerHTML = "";
-        members
+      function buildAnnouncementForm(title, message) {
+        const fd = new FormData();
+        fd.append("title", title);
+        fd.append("message", message);
+        const f = $("annMedia").files[0];
+        if (f) fd.append("media", f);
+        return fd;
+      }
+
+      $("postAnnouncement").addEventListener("click", () => {
+        const title = $("annTitle").value.trim();
+        const message = $("annMessage").value.trim();
+        if (!title) {
+          toast("Please enter a title.", true);
+          return;
+        }
+        busy($("postAnnouncement"), async () => {
+          try {
+            await api("/announcements/", { method: "POST", body: buildAnnouncementForm(title, message) });
+            $("annTitle").value = "";
+            $("annMessage").value = "";
+            $("annMedia").value = "";
+            $("annMediaInfo").textContent = "";
+            $("postBox").hidden = true;
+            $("postToggle").textContent = "Post a notice";
+            toast("Notice posted.");
+            loadAnnouncements();
+          } catch (err) {
+            toast(err.message, true);
+          }
+        });
+      });
+
+      // ---------- Members ----------
+      async function loadMembers() {
+        membersCache = await api("/members/");
+        const list = $("memberList");
+        list.innerHTML = "";
+        $("memberCount").textContent = membersCache.length + (membersCache.length === 1 ? " member" : " members");
+        membersCache.forEach((m) => {
+          const li = document.createElement("li");
+          li.className = "person";
+          const av = document.createElement("div");
+          av.className = "avatar";
+          av.textContent = initials(m.full_name);
+          const main = document.createElement("div");
+          main.className = "person-main";
+          const name = document.createElement("strong");
+          name.textContent = m.full_name;
+          main.appendChild(name);
+          li.append(av, main);
+          if (isStaff()) {
+            const sub = document.createElement("span");
+            sub.textContent = [roleLabel(m.role), m.level].filter(Boolean).join(", ");
+            main.appendChild(sub);
+            if (m.phone) {
+              const a = document.createElement("a");
+              a.href = "tel:" + m.phone;
+              a.textContent = m.phone;
+              li.appendChild(a);
+            }
+          }
+          list.appendChild(li);
+        });
+        if (isStaff()) renderChecklist();
+      }
+
+      $("registerToggle").addEventListener("click", () => {
+        const box = $("registerForm");
+        box.hidden = !box.hidden;
+        $("registerToggle").textContent = box.hidden ? "Add a member" : "Close";
+        if (!box.hidden) $("rgName").focus();
+      });
+
+      $("registerForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        busy($("registerBtn"), async () => {
+          try {
+            await api("/members/", {
+              method: "POST",
+              body: JSON.stringify({
+                full_name: $("rgName").value.trim(),
+                username: $("rgUser").value.trim(),
+                password: $("rgPass").value,
+                phone: $("rgPhone").value.trim(),
+                level: $("rgLevel").value.trim(),
+              }),
+            });
+            $("registerForm").reset();
+            $("registerForm").hidden = true;
+            $("registerToggle").textContent = "Add a member";
+            toast("Member added.");
+            await loadMembers();
+            updateDashboard();
+          } catch (err) {
+            toast(err.message, true);
+          }
+        });
+      });
+
+      // ---------- Approvals ----------
+      async function loadPending() {
+        const waiting = await api("/pending/");
+        const badge = $("pendingBadge");
+        badge.textContent = waiting.length;
+        badge.hidden = waiting.length === 0;
+        const box = $("pendingList");
+        box.innerHTML = "";
+        if (waiting.length === 0) {
+          box.appendChild(emptyState("No one is waiting.", "New sign-ups will appear here for you to approve."));
+          return;
+        }
+        const ul = document.createElement("ul");
+        ul.className = "people";
+        waiting.forEach((p) => {
+          const li = document.createElement("li");
+          li.className = "person";
+          const av = document.createElement("div");
+          av.className = "avatar";
+          av.textContent = initials(p.full_name);
+          const main = document.createElement("div");
+          main.className = "person-main";
+          const name = document.createElement("strong");
+          name.textContent = p.full_name;
+          const sub = document.createElement("span");
+          sub.textContent = [p.phone, p.level].filter(Boolean).join(", ");
+          main.append(name, sub);
+          const btn = document.createElement("button");
+          btn.className = "btn primary small";
+          btn.type = "button";
+          btn.textContent = "Approve";
+          btn.addEventListener("click", async () => {
+            btn.disabled = true;
+            try {
+              await api("/approve/" + p.id + "/", { method: "POST" });
+              toast(p.full_name + " approved.");
+              await loadPending();
+              await loadMembers();
+              updateDashboard();
+            } catch (err) {
+              toast(err.message, true);
+              btn.disabled = false;
+            }
+          });
+          li.append(av, main, btn);
+          ul.appendChild(li);
+        });
+        box.appendChild(ul);
+      }
+
+      // ---------- Attendance ----------
+      function formatDay(iso) {
+        return new Date(iso + "T00:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+      }
+
+      async function loadMyAttendance() {
+        const data = await api("/my-attendance/");
+        const box = $("myAttendance");
+        box.innerHTML = "";
+        if (data.total_meetings === 0) {
+          box.appendChild(emptyState("No meetings recorded yet.", "Your attendance will show here once a meeting is recorded."));
+          return;
+        }
+        const sum = document.createElement("div");
+        sum.className = "summary";
+        const big = document.createElement("b");
+        big.textContent = data.attended;
+        const txt = document.createElement("span");
+        txt.textContent = "of " + data.total_meetings + (data.total_meetings === 1 ? " meeting attended" : " meetings attended");
+        sum.append(big, txt);
+        box.appendChild(sum);
+
+        const ul = document.createElement("ul");
+        ul.className = "people";
+        data.records.forEach((r) => {
+          const li = document.createElement("li");
+          li.className = "person";
+          const main = document.createElement("div");
+          main.className = "person-main";
+          const ev = document.createElement("strong");
+          ev.textContent = r.event;
+          const dt = document.createElement("span");
+          dt.textContent = formatDay(r.date);
+          main.append(ev, dt);
+          const pill = document.createElement("span");
+          pill.className = "pill" + (r.present ? "" : " off");
+          pill.textContent = r.present ? "Present" : "Absent";
+          li.append(main, pill);
+          ul.appendChild(li);
+        });
+        box.appendChild(ul);
+      }
+
+      function renderChecklist() {
+        const box = $("attendanceList");
+        box.innerHTML = "";
+        $("selectAll").textContent = "Select all";
+        if (membersCache.length === 0) {
+          box.appendChild(emptyState("No members yet.", "Add or approve members first."));
+          return;
+        }
+        membersCache.forEach((m) => {
+          const label = document.createElement("label");
+          label.className = "check";
+          const cb = document.createElement("input");
+          cb.type = "checkbox";
+          cb.value = m.id;
+          label.append(cb, document.createTextNode(m.full_name));
+          box.appendChild(label);
+        });
+      }
+
+      $("selectAll").addEventListener("click", () => {
+        const boxes = Array.from($("attendanceList").querySelectorAll("input"));
+        if (boxes.length === 0) return;
+        const all = boxes.every((b) => b.checked);
+        boxes.forEach((b) => { b.checked = !all; });
+        $("selectAll").textContent = all ? "Select all" : "Clear all";
+      });
+
+      async function loadAttendance() {
+        attendanceRecords = await api("/attendance/");
+        const list = $("attendanceHistory");
+        list.innerHTML = "";
+        if (attendanceRecords.length === 0) {
+          const li = document.createElement("li");
+          li.className = "person";
+          li.textContent = "No meetings recorded yet.";
+          list.appendChild(li);
+          return;
+        }
+        attendanceRecords.forEach((r) => {
+          const li = document.createElement("li");
+          li.className = "person";
+          const main = document.createElement("div");
+          main.className = "person-main";
+          const ev = document.createElement("strong");
+          ev.textContent = r.event;
+          const dt = document.createElement("span");
+          dt.textContent = formatDay(r.date);
+          main.append(ev, dt);
+          const pill = document.createElement("span");
+          pill.className = "pill";
+          pill.textContent = r.present.length + " present";
+          li.append(main, pill);
+          list.appendChild(li);
+        });
+      }
+
+      $("saveAttendance").addEventListener("click", () => {
+        const event = $("eventName").value.trim();
+        const date = $("eventDate").value;
+        if (!event || !date) {
+          toast("Enter the event name and date.", true);
+          return;
+        }
+        const present = Array.from($("attendanceList").querySelectorAll("input:checked")).map((c) => Number(c.value));
+        busy($("saveAttendance"), async () => {
+          try {
+            await api("/attendance/", { method: "POST", body: JSON.stringify({ event, date, present }) });
+            $("eventName").value = "";
+            renderChecklist();
+            toast("Attendance saved.");
+            await loadAttendance();
+            await loadMyAttendance();
+            updateDashboard();
+          } catch (err) {
+            toast(err.message, true);
+          }
+        });
+      });
+
+      // ---------- Dashboard ----------
+      function updateDashboard() {
+        if (!isStaff()) return;
+        $("totalMembers").textContent = membersCache.length;
+        const n = attendanceRecords.length;
+        $("totalMeetings").textContent = n;
+        const total = attendanceRecords.reduce((sum, r) => sum + r.present.length, 0);
+        $("avgAttendance").textContent = n ? (total / n).toFixed(1) : "0";
+
+        const box = $("memberStats");
+        box.innerHTML = "";
+        if (n === 0) {
+          box.appendChild(emptyState("No meetings recorded yet.", "Take attendance to see who shows up most."));
+          return;
+        }
+        const wrap = document.createElement("div");
+        wrap.className = "bars";
+        membersCache
           .map((m) => ({
-            name: m.name,
-            attended: records.filter((r) => r.present.includes(m.name)).length,
+            name: m.full_name,
+            attended: attendanceRecords.filter((r) => r.present.includes(m.id)).length,
           }))
           .sort((a, b) => b.attended - a.attended)
           .forEach((s) => {
-            const li = document.createElement("li");
-            li.textContent =
-              s.name +
-              ": " +
-              s.attended +
-              " of " +
-              records.length +
-              " meetings";
-            stats.appendChild(li);
+            const row = document.createElement("div");
+            row.className = "bar-row";
+            const top = document.createElement("div");
+            top.className = "bar-top";
+            const name = document.createElement("strong");
+            name.textContent = s.name;
+            const count = document.createElement("span");
+            count.textContent = s.attended + " of " + n;
+            top.append(name, count);
+            const bar = document.createElement("div");
+            bar.className = "bar";
+            const fill = document.createElement("i");
+            fill.style.width = Math.round((s.attended / n) * 100) + "%";
+            bar.appendChild(fill);
+            row.append(top, bar);
+            wrap.appendChild(row);
           });
+        box.appendChild(wrap);
       }
 
-      function showMembers() {
-        list.innerHTML = "";
-        attendanceList.innerHTML = "";
-        members.forEach((m, i) => {
-          const li = document.createElement("li");
-          li.textContent =
-            m.name + " | " + m.phone + " | " + m.level + " | " + m.role;
-          list.appendChild(li);
-
-          const row = document.createElement("div");
-          row.innerHTML =
-            '<label><input type="checkbox" value="' +
-            i +
-            '" /> ' +
-            m.name +
-            "</label>";
-          attendanceList.appendChild(row);
-        });
-        count.textContent = members.length;
+      // ---------- Start ----------
+      if (token && me) {
+        showApp();
       }
-
-      function showHistory() {
-        history.innerHTML = "";
-        records.forEach((r) => {
-          const li = document.createElement("li");
-          li.textContent =
-            r.date + " | " + r.event + " | " + r.present.length + " present";
-          history.appendChild(li);
-        });
-      }
-
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        members.push({
-          name: document.getElementById("name").value,
-          phone: document.getElementById("phone").value,
-          level: document.getElementById("level").value,
-          role: document.getElementById("role").value,
-        });
-        localStorage.setItem("myfMembers", JSON.stringify(members));
-        showMembers();
-        showDashboard();
-        form.reset();
-      });
-
-      document
-        .getElementById("saveAttendance")
-        .addEventListener("click", () => {
-          const event = document.getElementById("eventName").value;
-          const date = document.getElementById("eventDate").value;
-          if (!event || !date) {
-            alert("Please enter the event name and date.");
-            return;
-          }
-          const boxes = attendanceList.querySelectorAll("input:checked");
-          const present = Array.from(boxes).map((b) => members[b.value].name);
-          records.push({ event, date, present });
-          localStorage.setItem("myfAttendance", JSON.stringify(records));
-          showHistory();
-          showDashboard();
-          boxes.forEach((b) => (b.checked = false));
-          document.getElementById("eventName").value = "";
-          document.getElementById("eventDate").value = "";
-        });
-
-      showAnnouncements();
-      showMembers();
-      showHistory();
-      showDashboard();
     </script>
   </body>
 </html>
