@@ -125,3 +125,90 @@ def approve(request, profile_id):
     profile.status = "approved"
     profile.save()
     return Response(ProfileFullSerializer(profile).data)
+
+from .models import Announcement, AttendanceRecord
+from .serializers import AnnouncementSerializer, AttendanceSerializer
+
+
+@api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated])
+def announcements(request):
+    if not is_approved(request.user):
+        return Response(
+            {"error": "Your account is not approved yet."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+    if request.method == "GET":
+        items = Announcement.objects.all()
+        return Response(AnnouncementSerializer(items, many=True).data)
+
+    if not is_staff_member(request.user):
+        return Response(
+            {"error": "Only executives can post announcements."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+    serializer = AnnouncementSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save(created_by=request.user)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def announcement_detail(request, announcement_id):
+    if not is_staff_member(request.user):
+        return Response(
+            {"error": "Only executives can delete announcements."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+    try:
+        item = Announcement.objects.get(id=announcement_id)
+    except Announcement.DoesNotExist:
+        return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+    item.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated])
+def attendance(request):
+    if not is_staff_member(request.user):
+        return Response(
+            {"error": "Only executives can see or take attendance."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+    if request.method == "GET":
+        records = AttendanceRecord.objects.all()
+        return Response(AttendanceSerializer(records, many=True).data)
+
+    serializer = AttendanceSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save(recorded_by=request.user)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def my_attendance(request):
+    if not is_approved(request.user):
+        return Response(
+            {"error": "Your account is not approved yet."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+    profile = request.user.profile
+    records = AttendanceRecord.objects.all()
+    rows = [
+        {
+            "event": r.event,
+            "date": r.date,
+            "present": r.present.filter(id=profile.id).exists(),
+        }
+        for r in records
+    ]
+    return Response(
+        {
+            "attended": sum(1 for row in rows if row["present"]),
+            "total_meetings": len(rows),
+            "records": rows,
+        }
+    )

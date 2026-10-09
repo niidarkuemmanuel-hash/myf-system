@@ -39,3 +39,35 @@ class ProfileNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ["id", "full_name"]
+
+from .models import Announcement, AttendanceRecord
+
+
+class AnnouncementSerializer(serializers.ModelSerializer):
+    posted_by = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Announcement
+        fields = ["id", "title", "message", "created_at", "posted_by"]
+        read_only_fields = ["created_at"]
+
+    def get_posted_by(self, obj):
+        if obj.created_by and hasattr(obj.created_by, "profile"):
+            return obj.created_by.profile.full_name
+        return ""
+
+
+class AttendanceSerializer(serializers.ModelSerializer):
+    present = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Profile.objects.filter(status="approved"),
+        required=False,
+    )
+    present_names = serializers.SerializerMethodField()
+
+    class Meta:
+        model = AttendanceRecord
+        fields = ["id", "event", "date", "present", "present_names"]
+
+    def get_present_names(self, obj):
+        return [p.full_name for p in obj.present.all()]
