@@ -21,6 +21,9 @@ class Profile(models.Model):
     full_name = models.CharField(max_length=150)
     phone = models.CharField(max_length=20, blank=True)
     level = models.CharField(max_length=100, blank=True)
+    group = models.ForeignKey(
+        "Group", on_delete=models.SET_NULL, null=True, blank=True, related_name="members"
+    )
     role = models.CharField(max_length=20, choices=ROLES, default="member")
     status = models.CharField(max_length=20, choices=STATUSES, default="pending")
 
@@ -40,6 +43,18 @@ def create_profile(sender, instance, created, **kwargs):
             )
         else:
             Profile.objects.create(user=instance, full_name=instance.username)
+
+
+class Group(models.Model):
+    name = models.CharField(max_length=80, unique=True)
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name = "fellowship group"
+        verbose_name_plural = "fellowship groups"
+
+    def __str__(self):
+        return self.name
 
 
 class Announcement(models.Model):
@@ -72,3 +87,21 @@ class AttendanceRecord(models.Model):
 
     def __str__(self):
         return f"{self.event} ({self.date})"
+
+
+class SiteSettings(models.Model):
+    login_background = models.FileField(upload_to="site/", blank=True, null=True)
+    short_name = models.CharField(max_length=60, default="Rev. Ebmmc MYF")
+    motto = models.TextField(default="We work.\nWe witness.\nWe worship.")
+    intro_text = models.TextField(
+        default="Rev. Ebmmc MYF. Log in to see notices, your attendance and who is in the fellowship."
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    @classmethod
+    def get(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+    def __str__(self):
+        return "Site settings"

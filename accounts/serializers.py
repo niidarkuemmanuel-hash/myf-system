@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Announcement, AttendanceRecord, Profile
+from .models import Announcement, AttendanceRecord, Group, Profile
 
 
 class SignupSerializer(serializers.Serializer):
@@ -10,6 +10,9 @@ class SignupSerializer(serializers.Serializer):
     full_name = serializers.CharField(max_length=150)
     phone = serializers.CharField(max_length=20)
     level = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    group = serializers.PrimaryKeyRelatedField(
+        queryset=Group.objects.all(), required=False, allow_null=True
+    )
 
     def validate_username(self, value):
         if User.objects.filter(username__iexact=value).exists():
@@ -25,14 +28,23 @@ class SignupSerializer(serializers.Serializer):
         profile.full_name = validated_data["full_name"]
         profile.phone = validated_data["phone"]
         profile.level = validated_data.get("level", "")
+        profile.group = validated_data.get("group")
         profile.save()
         return profile
 
 
 class ProfileFullSerializer(serializers.ModelSerializer):
+    group_name = serializers.SerializerMethodField()
+
     class Meta:
         model = Profile
-        fields = ["id", "full_name", "phone", "level", "role", "status"]
+        fields = [
+            "id", "full_name", "phone", "level", "role", "status",
+            "group", "group_name",
+        ]
+
+    def get_group_name(self, obj):
+        return obj.group.name if obj.group else ""
 
 
 class ProfileNameSerializer(serializers.ModelSerializer):

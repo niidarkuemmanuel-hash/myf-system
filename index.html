@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#231b68" />
-    <title>MYF Ghana</title>
+    <title>Rev. Ebmmc MYF</title>
     <link rel="icon" href="logo.jpg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,6 +16,7 @@
       :root {
         --navy: #231b68;
         --ink: #14104a;
+        --overlay: linear-gradient(100deg, rgba(20, 16, 74, 0.92), rgba(35, 27, 104, 0.74) 60%, rgba(35, 27, 104, 0.55));
         --yellow: #fdf405;
         --paper: #f5f4fb;
         --line: #dad7ee;
@@ -54,7 +55,7 @@
       .hint { color: var(--muted); font-size: 13px; margin: 10px 0 0; }
 
       /* ---------- Login screen ---------- */
-      .auth { min-height: 100vh; background: var(--navy); color: #fff; display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 40px; align-items: center; padding: 40px clamp(20px, 6vw, 80px); }
+      .auth { min-height: 100vh; background: var(--overlay), var(--login-photo, none) center / cover no-repeat, var(--navy); color: #fff; display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 40px; align-items: center; padding: 40px clamp(20px, 6vw, 80px); }
       .auth-logo { width: 84px; height: 84px; border-radius: 50%; background: #fff; display: block; }
       .auth-hero h1 { margin-top: 26px; font-size: clamp(2.5rem, 6.5vw, 4.6rem); font-weight: 800; line-height: 1.02; letter-spacing: -0.02em; color: var(--yellow); }
       .auth-hero h1 span { display: block; }
@@ -147,6 +148,20 @@
       .bar { height: 8px; background: var(--line); border-radius: 4px; margin-top: 8px; overflow: hidden; }
       .bar i { display: block; height: 100%; background: var(--navy); border-radius: 4px; }
 
+      .bg-preview { height: 170px; border-radius: 10px; margin-top: 14px; display: grid; place-items: center; color: #fff; font-weight: 600; background: var(--overlay), var(--login-photo, none) center / cover no-repeat, var(--navy); }
+      .secret { background: #fffde0; border: 1.5px solid var(--navy); border-radius: 10px; padding: 14px; margin-top: 14px; }
+      .secret code { display: block; font: 800 28px var(--font-display); letter-spacing: 0.08em; margin: 8px 0; word-break: break-all; }
+      .secret .btn { margin-top: 10px; }
+      .filter-row { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; }
+      .filter-row label { margin: 0; }
+      .filter-row select { margin: 0; width: auto; min-width: 200px; }
+      .group-pick { margin-top: 6px; padding: 6px 8px; font-size: 14px; width: auto; max-width: 100%; }
+      .inline-form { display: flex; gap: 10px; align-items: flex-start; margin-top: 14px; }
+      .inline-form input { margin-top: 0; }
+      .inline-form .btn { margin-top: 0; white-space: nowrap; }
+      .pw-wrap { position: relative; }
+      .pw-wrap input { padding-right: 70px; }
+      .pw-toggle { position: absolute; right: 6px; top: 6px; bottom: 0; display: flex; align-items: center; background: none; border: 0; color: var(--navy); font-weight: 700; font-size: 14px; padding: 0 10px; }
       .empty { padding: 28px 18px; border: 1.5px dashed #b9b5de; border-radius: 12px; text-align: center; color: var(--muted); }
       .empty strong { display: block; color: var(--ink); font-family: var(--font-display); font-size: 18px; margin-bottom: 4px; }
       .empty p { margin: 0; }
@@ -174,9 +189,9 @@
     <!-- ================= LOGIN / SIGN UP ================= -->
     <div id="authView" class="auth">
       <section class="auth-hero">
-        <img class="auth-logo" src="logo.jpg" alt="MYF Ghana logo" />
-        <h1><span>We work.</span><span>We witness.</span><span>We worship.</span></h1>
-        <p>Methodist Youth Fellowship, Ghana. Log in to see notices, your attendance and who is in the fellowship.</p>
+        <img class="auth-logo" src="logo.jpg" alt="Rev. Ebmmc MYF logo" />
+        <h1 id="authMotto"><span>We work.</span><span>We witness.</span><span>We worship.</span></h1>
+        <p id="authIntro">Rev. Ebmmc MYF. Log in to see notices, your attendance and who is in the fellowship.</p>
       </section>
 
       <section class="auth-card">
@@ -204,6 +219,8 @@
           <input id="suPhone" type="tel" required />
           <label for="suLevel">Level or occupation (optional)</label>
           <input id="suLevel" placeholder="e.g. Level 300 or Teacher" />
+          <label for="suGroup">Group</label>
+          <select id="suGroup"></select>
           <button class="btn primary wide" id="signupBtn" type="submit">Create account</button>
           <p class="hint">An executive approves new accounts before you can log in.</p>
         </form>
@@ -219,7 +236,7 @@
           <div class="brand">
             <img src="logo.jpg" alt="" />
             <div>
-              <strong>MYF Ghana</strong>
+              <strong id="brandName">Rev. Ebmmc MYF</strong>
               <span id="whoamiRole"></span>
             </div>
           </div>
@@ -234,6 +251,7 @@
           <button type="button" data-tab="attendance" role="tab">Attendance</button>
           <button type="button" data-tab="approvals" role="tab" class="staff-only">Approvals<span class="badge" id="pendingBadge" hidden>0</span></button>
           <button type="button" data-tab="dashboard" role="tab" class="staff-only">Dashboard</button>
+          <button type="button" data-tab="settings" role="tab">Settings</button>
         </nav>
       </header>
 
@@ -284,11 +302,18 @@
             <input id="rgPhone" type="tel" required />
             <label for="rgLevel">Level or occupation (optional)</label>
             <input id="rgLevel" />
+            <label for="rgGroup">Group</label>
+            <select id="rgGroup"></select>
             <div class="row-actions">
               <button class="btn primary" id="registerBtn" type="submit">Add member</button>
             </div>
             <p class="hint">Members you add are approved straight away.</p>
           </form>
+
+          <div class="filter-row staff-only">
+            <label for="groupFilter">Show</label>
+            <select id="groupFilter"></select>
+          </div>
 
           <ul class="people" id="memberList"></ul>
         </section>
@@ -338,6 +363,97 @@
           </div>
           <h3 class="sub">Attendance by member</h3>
           <div id="memberStats"></div>
+        </section>
+              <!-- Settings -->
+        <section class="panel" id="panel-settings" hidden>
+          <div class="panel-head">
+            <div>
+              <h2>Settings</h2>
+              <div class="panel-sub">Your account and, for executives, how the fellowship looks.</div>
+            </div>
+          </div>
+
+          <div class="sheet">
+            <h3>My account</h3>
+            <form id="profileForm">
+              <label for="pfName">Full name</label>
+              <input id="pfName" required />
+              <label for="pfPhone">Phone number</label>
+              <input id="pfPhone" type="tel" required />
+              <label for="pfLevel">Level or occupation</label>
+              <input id="pfLevel" />
+              <label for="pfGroup">Group</label>
+              <select id="pfGroup"></select>
+              <div class="row-actions">
+                <button class="btn primary" id="pfSave" type="submit">Save details</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="sheet">
+            <h3>Change my password</h3>
+            <form id="passwordForm">
+              <label for="pwOld">Current password</label>
+              <input id="pwOld" type="password" autocomplete="current-password" required />
+              <label for="pwNew">New password (at least 6 characters)</label>
+              <input id="pwNew" type="password" minlength="6" autocomplete="new-password" required />
+              <label for="pwNew2">Type the new password again</label>
+              <input id="pwNew2" type="password" minlength="6" autocomplete="new-password" required />
+              <div class="row-actions">
+                <button class="btn primary" id="pwSave" type="submit">Change password</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="staff-only">
+            <h3 class="sub">Fellowship</h3>
+
+            <div class="sheet">
+              <h3>Name, motto and intro</h3>
+              <form id="siteForm">
+                <label for="stName">Short name (shown at the top of every page)</label>
+                <input id="stName" maxlength="60" required />
+                <label for="stMotto">Motto on the login page (one line each, up to 3 lines)</label>
+                <textarea id="stMotto" rows="3"></textarea>
+                <label for="stIntro">Intro text on the login page</label>
+                <textarea id="stIntro" rows="3" maxlength="300"></textarea>
+                <div class="row-actions">
+                  <button class="btn primary" id="stSave" type="submit">Save</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="sheet">
+              <h3>Login page picture</h3>
+              <p class="hint">This picture appears behind the login screen. A wide, landscape photo works best. Make sure everyone in it is happy to be shown, because anyone who opens the site can see it.</p>
+              <div id="bgPreview" class="bg-preview"></div>
+              <label for="bgFile">Choose a new picture</label>
+              <input type="file" id="bgFile" accept="image/*" />
+              <div class="row-actions">
+                <button class="btn primary" id="bgSave" type="button">Use this picture</button>
+                <button class="btn line" id="bgRemove" type="button">Remove picture</button>
+              </div>
+            </div>
+
+            <h3 class="sub">Groups</h3>
+            <div class="sheet">
+              <p class="hint">Everyone in the fellowship belongs to a group. Add the groups here and people choose one when they sign up. Deleting a group does not delete its people. They just have no group until you set one.</p>
+              <form id="groupForm" class="inline-form">
+                <input id="grName" placeholder="Group name" maxlength="80" required />
+                <button class="btn primary" id="grAdd" type="submit">Add group</button>
+              </form>
+              <ul class="people" id="groupList" style="margin-top: 12px"></ul>
+            </div>
+
+            <h3 class="sub">Reset a member's password</h3>
+            <div class="sheet">
+              <p class="hint">Use this when someone forgets their password. You get a temporary password to give them privately. Their old password stops working straight away, and they can choose their own under Settings, My account. Executives can reset members. The Treasurer can also reset executives.</p>
+              <label for="rsSearch">Find a person</label>
+              <input id="rsSearch" placeholder="Start typing a name" />
+              <ul class="people" id="resetList" style="margin-top: 12px"></ul>
+              <div id="resetResult" hidden></div>
+            </div>
+          </div>
         </section>
       </main>
     </div>
@@ -423,7 +539,7 @@
             logout();
             throw new Error("Please log in again.");
           }
-          throw new Error(formatError(data));
+          throw new Error(data ? formatError(data) : "The server had a problem (code " + res.status + "). Please try again, and tell an admin if it keeps happening.");
         }
         return data;
       }
@@ -471,6 +587,7 @@
                 password: $("suPass").value,
                 phone: $("suPhone").value.trim(),
                 level: $("suLevel").value.trim(),
+                group: $("suGroup").value ? Number($("suGroup").value) : null,
               }),
             }, false);
             $("signupForm").reset();
@@ -488,6 +605,8 @@
         localStorage.removeItem("myfToken");
         localStorage.removeItem("myfMe");
         $("appView").hidden = true;
+        $("resetResult").hidden = true;
+        $("resetResult").innerHTML = "";
         $("authView").hidden = false;
         showAuthTab("login");
       }
@@ -513,6 +632,7 @@
         $("appView").hidden = false;
         $("whoami").textContent = me.full_name;
         $("whoamiRole").textContent = roleLabel(me.role);
+        fillProfileForm();
         document.querySelectorAll(".staff-only").forEach((el) => { el.hidden = !isStaff(); });
         if (!$("eventDate").value) $("eventDate").value = new Date().toISOString().slice(0, 10);
         showTab("notices");
@@ -520,7 +640,7 @@
       }
 
       async function loadAll() {
-        const jobs = [loadAnnouncements, loadMembers, loadMyAttendance];
+        const jobs = [loadGroups, loadAnnouncements, loadMembers, loadMyAttendance];
         if (isStaff()) jobs.push(loadPending, loadAttendance);
         for (const job of jobs) {
           try { await job(); } catch (err) { console.error(err); }
@@ -657,8 +777,9 @@
         membersCache = await api("/members/");
         const list = $("memberList");
         list.innerHTML = "";
-        $("memberCount").textContent = membersCache.length + (membersCache.length === 1 ? " member" : " members");
-        membersCache.forEach((m) => {
+        const shownMembers = visibleMembers();
+        $("memberCount").textContent = shownMembers.length + (shownMembers.length === 1 ? " member" : " members");
+        shownMembers.forEach((m) => {
           const li = document.createElement("li");
           li.className = "person";
           const av = document.createElement("div");
@@ -672,8 +793,9 @@
           li.append(av, main);
           if (isStaff()) {
             const sub = document.createElement("span");
-            sub.textContent = [roleLabel(m.role), m.level].filter(Boolean).join(", ");
+            sub.textContent = [roleLabel(m.role), m.group_name, m.level].filter(Boolean).join(", ");
             main.appendChild(sub);
+            main.appendChild(buildGroupPicker(m));
             if (m.phone) {
               const a = document.createElement("a");
               a.href = "tel:" + m.phone;
@@ -683,7 +805,11 @@
           }
           list.appendChild(li);
         });
-        if (isStaff()) renderChecklist();
+        if (isStaff()) {
+          renderChecklist();
+          renderResetList();
+          renderGroupList();
+        }
       }
 
       $("registerToggle").addEventListener("click", () => {
@@ -705,6 +831,7 @@
                 password: $("rgPass").value,
                 phone: $("rgPhone").value.trim(),
                 level: $("rgLevel").value.trim(),
+                group: $("rgGroup").value ? Number($("rgGroup").value) : null,
               }),
             });
             $("registerForm").reset();
@@ -744,7 +871,7 @@
           const name = document.createElement("strong");
           name.textContent = p.full_name;
           const sub = document.createElement("span");
-          sub.textContent = [p.phone, p.level].filter(Boolean).join(", ");
+          sub.textContent = [p.phone, p.level, p.group_name].filter(Boolean).join(", ");
           main.append(name, sub);
           const btn = document.createElement("button");
           btn.className = "btn primary small";
@@ -935,7 +1062,465 @@
         box.appendChild(wrap);
       }
 
+      const DEFAULT_INTRO = "Rev. Ebmmc MYF. Log in to see notices, your attendance and who is in the fellowship.";
+      const DEFAULT_MOTTO = ["We work.", "We witness.", "We worship."];
+
+      function applySiteText(info) {
+        const name = (info && info.short_name) || "Rev. Ebmmc MYF";
+        $("brandName").textContent = name;
+        document.title = name;
+        const lines = ((info && info.motto) || "").split("\n").map((l) => l.trim()).filter(Boolean).slice(0, 3);
+        const motto = lines.length ? lines : DEFAULT_MOTTO;
+        const h = $("authMotto");
+        const current = Array.from(h.children).map((c) => c.textContent).join("\n");
+        if (current !== motto.join("\n")) {
+          h.innerHTML = "";
+          motto.forEach((t) => {
+            const span = document.createElement("span");
+            span.textContent = t;
+            h.appendChild(span);
+          });
+        }
+        $("authIntro").textContent = (info && info.intro_text) || DEFAULT_INTRO;
+      }
+
+      function fillSiteForm(info) {
+        $("stName").value = info.short_name || "";
+        $("stMotto").value = info.motto || "";
+        $("stIntro").value = info.intro_text || "";
+      }
+
+      function fillProfileForm() {
+        $("pfName").value = me.full_name || "";
+        $("pfPhone").value = me.phone || "";
+        $("pfLevel").value = me.level || "";
+        $("pfGroup").value = me.group ? String(me.group) : "";
+      }
+
+      // ---------- My account ----------
+      $("profileForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        busy($("pfSave"), async () => {
+          try {
+            const data = await api("/me/", {
+              method: "PATCH",
+              body: JSON.stringify({
+                full_name: $("pfName").value.trim(),
+                phone: $("pfPhone").value.trim(),
+                level: $("pfLevel").value.trim(),
+                group: $("pfGroup").value ? Number($("pfGroup").value) : null,
+              }),
+            });
+            me = data;
+            localStorage.setItem("myfMe", JSON.stringify(me));
+            $("whoami").textContent = me.full_name;
+            toast("Details saved.");
+            loadMembers().catch(() => {});
+          } catch (err) {
+            toast(err.message, true);
+          }
+        });
+      });
+
+      $("passwordForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        if ($("pwNew").value !== $("pwNew2").value) {
+          toast("The two new passwords do not match.", true);
+          return;
+        }
+        busy($("pwSave"), async () => {
+          try {
+            await api("/change-password/", {
+              method: "POST",
+              body: JSON.stringify({ old_password: $("pwOld").value, new_password: $("pwNew").value }),
+            });
+            $("passwordForm").reset();
+            toast("Password changed.");
+          } catch (err) {
+            toast(err.message, true);
+          }
+        });
+      });
+
+      // ---------- Fellowship details ----------
+      $("siteForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        busy($("stSave"), async () => {
+          try {
+            const data = await api("/site/", {
+              method: "PATCH",
+              body: JSON.stringify({
+                short_name: $("stName").value.trim(),
+                motto: $("stMotto").value,
+                intro_text: $("stIntro").value.trim(),
+              }),
+            });
+            applyLoginPhoto(data);
+            fillSiteForm(data);
+            toast("Saved.");
+          } catch (err) {
+            toast(err.message, true);
+          }
+        });
+      });
+
+      // ---------- Reset a password ----------
+      function renderResetList() {
+        const list = $("resetList");
+        list.innerHTML = "";
+        if (!isStaff()) return;
+        const q = $("rsSearch").value.trim().toLowerCase();
+        const canReset = (m) => m.id !== me.id && (m.role === "member" || (me.role === "treasurer" && m.role === "executive"));
+        const rows = membersCache.filter((m) => canReset(m) && (!q || m.full_name.toLowerCase().includes(q)));
+        if (rows.length === 0) {
+          const li = document.createElement("li");
+          li.className = "person";
+          li.textContent = "No matching people.";
+          list.appendChild(li);
+          return;
+        }
+        rows.slice(0, 20).forEach((m) => {
+          const li = document.createElement("li");
+          li.className = "person";
+          const av = document.createElement("div");
+          av.className = "avatar";
+          av.textContent = initials(m.full_name);
+          const main = document.createElement("div");
+          main.className = "person-main";
+          const name = document.createElement("strong");
+          name.textContent = m.full_name;
+          const sub = document.createElement("span");
+          sub.textContent = roleLabel(m.role);
+          main.append(name, sub);
+          const btn = document.createElement("button");
+          btn.className = "btn line small";
+          btn.type = "button";
+          btn.textContent = "Reset password";
+          btn.addEventListener("click", async () => {
+            if (!confirm("Reset the password for " + m.full_name + "? Their current password will stop working.")) return;
+            btn.disabled = true;
+            try {
+              const data = await api("/reset-password/" + m.id + "/", { method: "POST" });
+              showResetResult(data);
+            } catch (err) {
+              toast(err.message, true);
+            } finally {
+              btn.disabled = false;
+            }
+          });
+          li.append(av, main, btn);
+          list.appendChild(li);
+        });
+      }
+      $("rsSearch").addEventListener("input", renderResetList);
+
+      function showResetResult(data) {
+        const box = $("resetResult");
+        box.innerHTML = "";
+        box.className = "secret";
+        box.hidden = false;
+        const t1 = document.createElement("div");
+        t1.textContent = "Temporary password for " + data.full_name + " (username: " + data.username + ")";
+        const code = document.createElement("code");
+        code.textContent = data.temporary_password;
+        const t2 = document.createElement("div");
+        t2.className = "hint";
+        t2.textContent = "Share it with them privately. It is shown only once. They can choose their own under Settings, My account.";
+        const copy = document.createElement("button");
+        copy.className = "btn line small";
+        copy.type = "button";
+        copy.textContent = "Copy password";
+        copy.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(data.temporary_password);
+            toast("Copied.");
+          } catch (err) {
+            toast("Could not copy. Please write it down.", true);
+          }
+        });
+        box.append(t1, code, t2, copy);
+      }
+
+      // ---------- Groups ----------
+      let groupsCache = [];
+
+      function setOptions(select, blankLabel) {
+        select.innerHTML = "";
+        const blank = document.createElement("option");
+        blank.value = "";
+        blank.textContent = blankLabel;
+        select.appendChild(blank);
+        groupsCache.forEach((g) => {
+          const o = document.createElement("option");
+          o.value = String(g.id);
+          o.textContent = g.name;
+          select.appendChild(o);
+        });
+      }
+
+      async function loadGroups() {
+        try {
+          groupsCache = await api("/groups/", {}, false);
+        } catch (err) {
+          console.error(err);
+          return;
+        }
+        const has = groupsCache.length > 0;
+        setOptions($("suGroup"), has ? "Choose your group" : "No groups set up yet");
+        $("suGroup").required = has;
+        setOptions($("rgGroup"), has ? "Choose a group" : "No groups set up yet");
+        $("rgGroup").required = has;
+        setOptions($("pfGroup"), "No group");
+        $("pfGroup").value = me && me.group ? String(me.group) : "";
+        renderGroupFilter();
+        renderGroupList();
+      }
+
+      function renderGroupFilter() {
+        const sel = $("groupFilter");
+        const keep = sel.value || "all";
+        sel.innerHTML = "";
+        const add = (value, label) => {
+          const o = document.createElement("option");
+          o.value = value;
+          o.textContent = label;
+          sel.appendChild(o);
+        };
+        add("all", "All groups");
+        groupsCache.forEach((g) => add(String(g.id), g.name));
+        add("none", "No group");
+        sel.value = Array.from(sel.options).some((o) => o.value === keep) ? keep : "all";
+      }
+
+      function visibleMembers() {
+        const f = $("groupFilter").value || "all";
+        if (!isStaff() || f === "all") return membersCache;
+        if (f === "none") return membersCache.filter((m) => !m.group);
+        return membersCache.filter((m) => String(m.group) === f);
+      }
+      $("groupFilter").addEventListener("change", () => loadMembers().catch(() => {}));
+
+      function buildGroupPicker(m) {
+        if (groupsCache.length === 0) return document.createDocumentFragment();
+        const sel = document.createElement("select");
+        sel.className = "group-pick";
+        sel.setAttribute("aria-label", "Group for " + m.full_name);
+        setOptions(sel, "No group");
+        sel.value = m.group ? String(m.group) : "";
+        sel.addEventListener("change", async () => {
+          try {
+            await api("/members/" + m.id + "/group/", {
+              method: "POST",
+              body: JSON.stringify({ group: sel.value ? Number(sel.value) : null }),
+            });
+            toast("Group updated for " + m.full_name + ".");
+            await loadMembers();
+          } catch (err) {
+            toast(err.message, true);
+            sel.value = m.group ? String(m.group) : "";
+          }
+        });
+        return sel;
+      }
+
+      function renderGroupList() {
+        const list = $("groupList");
+        if (!isStaff()) return;
+        list.innerHTML = "";
+        if (groupsCache.length === 0) {
+          const li = document.createElement("li");
+          li.className = "person";
+          li.textContent = "No groups yet. Add the first one above.";
+          list.appendChild(li);
+          return;
+        }
+        groupsCache.forEach((g) => {
+          const count = membersCache.filter((m) => m.group === g.id).length;
+          const li = document.createElement("li");
+          li.className = "person";
+          const main = document.createElement("div");
+          main.className = "person-main";
+          const name = document.createElement("strong");
+          name.textContent = g.name;
+          const sub = document.createElement("span");
+          sub.textContent = count + (count === 1 ? " person" : " people");
+          main.append(name, sub);
+
+          const rename = document.createElement("button");
+          rename.className = "btn line small";
+          rename.type = "button";
+          rename.textContent = "Rename";
+          rename.addEventListener("click", async () => {
+            const input = prompt("New name for this group:", g.name);
+            if (input === null || !input.trim()) return;
+            try {
+              await api("/groups/" + g.id + "/", { method: "PATCH", body: JSON.stringify({ name: input.trim() }) });
+              toast("Group renamed.");
+              await loadGroups();
+              await loadMembers();
+            } catch (err) {
+              toast(err.message, true);
+            }
+          });
+
+          const del = document.createElement("button");
+          del.className = "link-danger";
+          del.type = "button";
+          del.textContent = "Delete";
+          del.addEventListener("click", async () => {
+            if (!confirm('Delete the group "' + g.name + '"? People in it will have no group until you set one.')) return;
+            try {
+              await api("/groups/" + g.id + "/", { method: "DELETE" });
+              toast("Group deleted.");
+              await loadGroups();
+              await loadMembers();
+            } catch (err) {
+              toast(err.message, true);
+            }
+          });
+
+          li.append(main, rename, del);
+          list.appendChild(li);
+        });
+      }
+
+      $("groupForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        busy($("grAdd"), async () => {
+          try {
+            await api("/groups/", { method: "POST", body: JSON.stringify({ name: $("grName").value.trim() }) });
+            $("grName").value = "";
+            toast("Group added.");
+            await loadGroups();
+            await loadMembers();
+          } catch (err) {
+            toast(err.message, true);
+          }
+        });
+      });
+
+      // ---------- Login page picture ----------
+      let siteInfo = { login_background: "" };
+
+      function applyLoginPhoto(info) {
+        siteInfo = info || { login_background: "" };
+        applySiteText(siteInfo);
+        const root = document.documentElement;
+        if (siteInfo.login_background) {
+          const url = siteInfo.login_background + "?v=" + encodeURIComponent(siteInfo.updated_at || "");
+          root.style.setProperty("--login-photo", 'url("' + url + '")');
+        } else {
+          root.style.removeProperty("--login-photo");
+        }
+        const prev = $("bgPreview");
+        prev.style.removeProperty("--login-photo");
+        prev.textContent = siteInfo.login_background ? "" : "No picture set";
+        $("bgRemove").hidden = !siteInfo.login_background;
+      }
+
+      async function loadSite() {
+        try {
+          const info = await api("/site/", {}, false);
+          applyLoginPhoto(info);
+          fillSiteForm(info);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      function resizeImage(file, maxWidth) {
+        return new Promise((resolve, reject) => {
+          const url = URL.createObjectURL(file);
+          const img = new Image();
+          img.onload = () => {
+            const scale = Math.min(1, maxWidth / img.width);
+            const c = document.createElement("canvas");
+            c.width = Math.round(img.width * scale);
+            c.height = Math.round(img.height * scale);
+            c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+            URL.revokeObjectURL(url);
+            c.toBlob(
+              (blob) => (blob ? resolve(blob) : reject(new Error("Could not prepare the picture."))),
+              "image/jpeg",
+              0.82
+            );
+          };
+          img.onerror = () => {
+            URL.revokeObjectURL(url);
+            reject(new Error("This picture format is not supported. Please use a JPG or PNG."));
+          };
+          img.src = url;
+        });
+      }
+
+      $("bgFile").addEventListener("change", () => {
+        const f = $("bgFile").files[0];
+        if (!f) {
+          applyLoginPhoto(siteInfo);
+          return;
+        }
+        $("bgPreview").textContent = "";
+        $("bgPreview").style.setProperty("--login-photo", 'url("' + URL.createObjectURL(f) + '")');
+      });
+
+      $("bgSave").addEventListener("click", () => {
+        const f = $("bgFile").files[0];
+        if (!f) {
+          toast("Choose a picture first.", true);
+          return;
+        }
+        busy($("bgSave"), async () => {
+          try {
+            const blob = await resizeImage(f, 1920);
+            const fd = new FormData();
+            fd.append("image", blob, "login-bg.jpg");
+            const data = await api("/site/", { method: "POST", body: fd });
+            $("bgFile").value = "";
+            applyLoginPhoto(data);
+            toast("Login picture updated.");
+          } catch (err) {
+            toast(err.message, true);
+          }
+        });
+      });
+
+      $("bgRemove").addEventListener("click", () => {
+        if (!confirm("Remove the login picture?")) return;
+        busy($("bgRemove"), async () => {
+          try {
+            const data = await api("/site/", { method: "DELETE" });
+            $("bgFile").value = "";
+            applyLoginPhoto(data);
+            toast("Login picture removed.");
+          } catch (err) {
+            toast(err.message, true);
+          }
+        });
+      });
+
+      // ---------- Show / hide password ----------
+      document.querySelectorAll('input[type="password"]').forEach((input) => {
+        const wrap = document.createElement("div");
+        wrap.className = "pw-wrap";
+        input.parentNode.insertBefore(wrap, input);
+        wrap.appendChild(input);
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "pw-toggle";
+        btn.textContent = "Show";
+        btn.setAttribute("aria-label", "Show password");
+        btn.addEventListener("click", () => {
+          const hidden = input.type === "password";
+          input.type = hidden ? "text" : "password";
+          btn.textContent = hidden ? "Hide" : "Show";
+          btn.setAttribute("aria-label", hidden ? "Hide password" : "Show password");
+        });
+        wrap.appendChild(btn);
+      });
+
       // ---------- Start ----------
+      loadSite();
+      loadGroups();
       if (token && me) {
         showApp();
       }
