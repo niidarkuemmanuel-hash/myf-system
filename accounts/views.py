@@ -70,7 +70,7 @@ def login(request):
 def me(request):
     profile = request.user.profile
     if request.method == "PATCH":
-        limits = {"full_name": 150, "phone": 20, "level": 100}
+        limits = {"full_name": 150, "phone": 20, "level": 100, "school": 150}
         for field, limit in limits.items():
             if field in request.data:
                 value = str(request.data[field]).strip()[:limit]

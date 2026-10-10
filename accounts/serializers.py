@@ -10,6 +10,7 @@ class SignupSerializer(serializers.Serializer):
     full_name = serializers.CharField(max_length=150)
     phone = serializers.CharField(max_length=20)
     level = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    school = serializers.CharField(max_length=150, required=False, allow_blank=True)
     group = serializers.PrimaryKeyRelatedField(
         queryset=Group.objects.all(), required=False, allow_null=True
     )
@@ -28,6 +29,7 @@ class SignupSerializer(serializers.Serializer):
         profile.full_name = validated_data["full_name"]
         profile.phone = validated_data["phone"]
         profile.level = validated_data.get("level", "")
+        profile.school = validated_data.get("school", "")
         profile.group = validated_data.get("group")
         profile.save()
         return profile
@@ -39,7 +41,7 @@ class ProfileFullSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = [
-            "id", "full_name", "phone", "level", "role", "status",
+            "id", "full_name", "phone", "level", "school", "role", "status",
             "group", "group_name",
         ]
 

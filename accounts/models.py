@@ -21,6 +21,7 @@ class Profile(models.Model):
     full_name = models.CharField(max_length=150)
     phone = models.CharField(max_length=20, blank=True)
     level = models.CharField(max_length=100, blank=True)
+    school = models.CharField(max_length=150, blank=True)
     group = models.ForeignKey(
         "Group", on_delete=models.SET_NULL, null=True, blank=True, related_name="members"
     )
@@ -105,3 +106,46 @@ class SiteSettings(models.Model):
 
     def __str__(self):
         return "Site settings"
+
+
+class RegistrationForm(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    questions = models.JSONField(default=list, blank=True)
+    is_open = models.BooleanField(default=True)
+    closes_on = models.DateField(null=True, blank=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="forms_created",
+    )
+    editors = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, blank=True, related_name="forms_shared"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.title
+
+
+class FormResponse(models.Model):
+    form = models.ForeignKey(
+        RegistrationForm, on_delete=models.CASCADE, related_name="responses"
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="form_responses"
+    )
+    answers = models.JSONField(default=dict, blank=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["submitted_at"]
+        unique_together = ("form", "user")
+
+    def __str__(self):
+        return f"{self.user} - {self.form}"

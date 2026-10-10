@@ -162,6 +162,60 @@
       .pw-wrap { position: relative; }
       .pw-wrap input { padding-right: 70px; }
       .pw-toggle { position: absolute; right: 6px; top: 6px; bottom: 0; display: flex; align-items: center; background: none; border: 0; color: var(--navy); font-weight: 700; font-size: 14px; padding: 0 10px; }
+      .slider { position: relative; border-radius: 14px; overflow: hidden; margin: 0 0 8px; background: var(--navy); }
+      .slides { display: flex; }
+      .slide { flex: 0 0 100%; min-height: 240px; position: relative; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; padding: 22px 64px 48px; color: #fff; text-decoration: none; background: linear-gradient(120deg, var(--ink), var(--navy)); }
+      .slide:not(.has-img)::after { content: ""; position: absolute; top: 18px; right: 18px; width: 92px; height: 80px; background: var(--yellow); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+      .slide.has-img { background: linear-gradient(180deg, rgba(20, 16, 74, 0.12) 0%, rgba(20, 16, 74, 0.9) 100%), var(--slide-img) center / cover no-repeat, var(--navy); }
+      .slide-date { align-self: flex-start; background: var(--yellow); color: var(--ink); font-weight: 700; font-size: 13px; padding: 3px 10px; border-radius: 99px; position: relative; z-index: 1; }
+      .slide h3 { position: relative; z-index: 1; font-size: clamp(1.45rem, 4.5vw, 2.2rem); line-height: 1.1; letter-spacing: -0.01em; max-width: 24ch; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+      .slide p { position: relative; z-index: 1; margin: 0; max-width: 52ch; color: #dcd9f5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+      .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(20, 16, 74, 0.55); color: #fff; font-size: 24px; line-height: 1; display: grid; place-items: center; padding: 0 0 3px; }
+      .slider-btn:hover { background: rgba(20, 16, 74, 0.9); }
+      .slider-btn.prev { left: 12px; }
+      .slider-btn.next { right: 12px; }
+      .dots { position: absolute; left: 64px; bottom: 18px; display: flex; gap: 8px; align-items: center; }
+      .dots button { width: 11px; height: 11px; border-radius: 6px; border: 0; padding: 0; background: rgba(255, 255, 255, 0.5); }
+      .dots button.on { background: var(--yellow); width: 28px; }
+      .slider-pause { position: absolute; right: 14px; bottom: 12px; background: rgba(20, 16, 74, 0.6); color: #fff; border: 0; border-radius: 99px; padding: 4px 12px; font-size: 13px; font-weight: 600; }
+      .notice.flash { animation: flash 1.8s ease; }
+      @keyframes flash { from { box-shadow: 0 0 0 5px rgba(35, 27, 104, 0.5); } to { box-shadow: 0 0 0 5px transparent; } }
+      @media (max-width: 560px) {
+        .slider-btn { display: none; }
+        .slide { padding: 18px 18px 46px; min-height: 220px; }
+        .slide:not(.has-img)::after { width: 64px; height: 56px; top: 14px; right: 14px; }
+        .dots { left: 18px; }
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        .slides { transition: transform 0.55s cubic-bezier(0.22, 0.7, 0.2, 1); }
+      }
+      .program { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+      .program-top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+      .program h3 { font-size: 20px; line-height: 1.2; }
+      .program p { margin: 8px 0 0; color: var(--muted); max-width: 65ch; white-space: pre-wrap; }
+      .program-meta { margin-top: 10px; font-size: 13px; color: var(--muted); }
+      .program-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+      .back { background: none; border: 0; color: var(--navy); font-weight: 700; padding: 0; margin: 0 0 14px; font-size: 15px; }
+      .fill-title { font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: 6px; }
+      .fill-desc { margin: 0 0 16px; max-width: 65ch; white-space: pre-wrap; color: var(--muted); }
+      .sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+      .q-field { display: block; margin-top: 18px; }
+      .q-label { display: block; font-weight: 600; font-size: 15px; }
+      .req { color: var(--bad); }
+      .opt { display: flex; align-items: center; gap: 10px; margin: 0; padding: 7px 0; font-weight: 500; font-size: 16px; }
+      .q-edit { border: 1px solid var(--line); border-radius: 10px; padding: 12px; margin-top: 12px; background: var(--paper); }
+      .q-top { display: grid; grid-template-columns: 1fr 160px; gap: 8px; }
+      .q-top input, .q-top select, .q-edit textarea { margin-top: 0; }
+      .q-edit textarea { margin-top: 8px; }
+      .q-bottom { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+      .q-tools { display: flex; gap: 6px; }
+      .inline-check { display: flex; align-items: center; gap: 8px; margin: 0; font-weight: 500; }
+      .switch-row { display: flex; align-items: center; gap: 10px; margin-top: 16px; font-weight: 500; }
+      .resp { border-top: 1px solid var(--line); padding: 12px 0; }
+      .resp:first-child { border-top: 0; }
+      .resp-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+      .ans { font-size: 14px; margin-top: 4px; }
+      @media (max-width: 560px) { .q-top { grid-template-columns: 1fr; } }
       .empty { padding: 28px 18px; border: 1.5px dashed #b9b5de; border-radius: 12px; text-align: center; color: var(--muted); }
       .empty strong { display: block; color: var(--ink); font-family: var(--font-display); font-size: 18px; margin-bottom: 4px; }
       .empty p { margin: 0; }
@@ -219,6 +273,8 @@
           <input id="suPhone" type="tel" required />
           <label for="suLevel">Level or occupation (optional)</label>
           <input id="suLevel" placeholder="e.g. Level 300 or Teacher" />
+          <label for="suSchool">School (if you are a student)</label>
+          <input id="suSchool" placeholder="e.g. University of Ghana" maxlength="150" />
           <label for="suGroup">Group</label>
           <select id="suGroup"></select>
           <button class="btn primary wide" id="signupBtn" type="submit">Create account</button>
@@ -248,6 +304,7 @@
         <nav class="tabs" id="tabs" role="tablist">
           <button type="button" data-tab="notices" role="tab">Notices</button>
           <button type="button" data-tab="members" role="tab">Members</button>
+          <button type="button" data-tab="programs" role="tab">Programs</button>
           <button type="button" data-tab="attendance" role="tab">Attendance</button>
           <button type="button" data-tab="approvals" role="tab" class="staff-only">Approvals<span class="badge" id="pendingBadge" hidden>0</span></button>
           <button type="button" data-tab="dashboard" role="tab" class="staff-only">Dashboard</button>
@@ -277,6 +334,14 @@
             </div>
           </div>
 
+          <div id="slider" class="slider" aria-roledescription="carousel" aria-label="Latest notices" hidden>
+            <div class="slides" id="slides"></div>
+            <button type="button" class="slider-btn prev" id="sliderPrev" aria-label="Previous notice">&#8249;</button>
+            <button type="button" class="slider-btn next" id="sliderNext" aria-label="Next notice">&#8250;</button>
+            <div class="dots" id="sliderDots"></div>
+            <button type="button" class="slider-pause" id="sliderPause">Pause</button>
+          </div>
+          <h3 class="sub" id="allNoticesTitle" hidden>All notices</h3>
           <div id="announcementList"></div>
         </section>
 
@@ -302,6 +367,8 @@
             <input id="rgPhone" type="tel" required />
             <label for="rgLevel">Level or occupation (optional)</label>
             <input id="rgLevel" />
+            <label for="rgSchool">School (if a student)</label>
+            <input id="rgSchool" placeholder="e.g. University of Ghana" maxlength="150" />
             <label for="rgGroup">Group</label>
             <select id="rgGroup"></select>
             <div class="row-actions">
@@ -340,6 +407,20 @@
             <h3 class="sub">Past meetings</h3>
             <ul class="people" id="attendanceHistory"></ul>
           </div>
+        </section>
+
+        <!-- Programs -->
+        <section class="panel" id="panel-programs" hidden>
+          <div class="panel-head" id="progHead">
+            <div>
+              <h2>Programs</h2>
+              <div class="panel-sub">Register for programs and events.</div>
+            </div>
+            <button id="progCreate" class="btn primary staff-only" type="button">Create a form</button>
+          </div>
+          <div id="progList"></div>
+          <div id="progFill" hidden></div>
+          <div id="progManage" hidden></div>
         </section>
 
         <!-- Approvals -->
@@ -382,6 +463,8 @@
               <input id="pfPhone" type="tel" required />
               <label for="pfLevel">Level or occupation</label>
               <input id="pfLevel" />
+              <label for="pfSchool">School (if you are a student)</label>
+              <input id="pfSchool" placeholder="e.g. University of Ghana" maxlength="150" />
               <label for="pfGroup">Group</label>
               <select id="pfGroup"></select>
               <div class="row-actions">
@@ -587,6 +670,7 @@
                 password: $("suPass").value,
                 phone: $("suPhone").value.trim(),
                 level: $("suLevel").value.trim(),
+                school: $("suSchool").value.trim(),
                 group: $("suGroup").value ? Number($("suGroup").value) : null,
               }),
             }, false);
@@ -621,6 +705,10 @@
           b.setAttribute("aria-selected", on ? "true" : "false");
         });
         window.scrollTo(0, 0);
+        if (name === "programs") {
+          showProgramList();
+          loadForms().catch(() => {});
+        }
       }
       $("tabs").addEventListener("click", (e) => {
         const b = e.target.closest("button[data-tab]");
@@ -654,15 +742,18 @@
         const box = $("announcementList");
         box.innerHTML = "";
         if (items.length === 0) {
+          buildSlider([]);
           box.appendChild(emptyState(
             "No notices yet.",
             isStaff() ? "Use Post a notice to share the first one." : "News from the executives will show up here."
           ));
           return;
         }
+        buildSlider(items.slice(0, 5));
         items.forEach((a) => {
           const art = document.createElement("article");
           art.className = "notice";
+          art.id = "notice-" + a.id;
 
           const d = new Date(a.created_at);
           const date = document.createElement("div");
@@ -793,7 +884,7 @@
           li.append(av, main);
           if (isStaff()) {
             const sub = document.createElement("span");
-            sub.textContent = [roleLabel(m.role), m.group_name, m.level].filter(Boolean).join(", ");
+            sub.textContent = [roleLabel(m.role), m.group_name, m.level, m.school].filter(Boolean).join(", ");
             main.appendChild(sub);
             main.appendChild(buildGroupPicker(m));
             if (m.phone) {
@@ -831,6 +922,7 @@
                 password: $("rgPass").value,
                 phone: $("rgPhone").value.trim(),
                 level: $("rgLevel").value.trim(),
+                school: $("rgSchool").value.trim(),
                 group: $("rgGroup").value ? Number($("rgGroup").value) : null,
               }),
             });
@@ -871,7 +963,7 @@
           const name = document.createElement("strong");
           name.textContent = p.full_name;
           const sub = document.createElement("span");
-          sub.textContent = [p.phone, p.level, p.group_name].filter(Boolean).join(", ");
+          sub.textContent = [p.phone, p.level, p.school, p.group_name].filter(Boolean).join(", ");
           main.append(name, sub);
           const btn = document.createElement("button");
           btn.className = "btn primary small";
@@ -1094,6 +1186,7 @@
         $("pfName").value = me.full_name || "";
         $("pfPhone").value = me.phone || "";
         $("pfLevel").value = me.level || "";
+        $("pfSchool").value = me.school || "";
         $("pfGroup").value = me.group ? String(me.group) : "";
       }
 
@@ -1108,6 +1201,7 @@
                 full_name: $("pfName").value.trim(),
                 phone: $("pfPhone").value.trim(),
                 level: $("pfLevel").value.trim(),
+                school: $("pfSchool").value.trim(),
                 group: $("pfGroup").value ? Number($("pfGroup").value) : null,
               }),
             });
@@ -1398,6 +1492,634 @@
           }
         });
       });
+
+      // ---------- Notice slider ----------
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      let sliderIndex = 0;
+      let sliderCount = 0;
+      let sliderTimer = null;
+      let sliderHold = false;
+      let sliderUserPaused = reduceMotion;
+      let sliderTouchX = null;
+
+      function stopSlider() {
+        clearInterval(sliderTimer);
+        sliderTimer = null;
+      }
+
+      function startSlider() {
+        stopSlider();
+        if (sliderCount < 2 || sliderUserPaused) return;
+        sliderTimer = setInterval(() => {
+          if (!sliderHold) goTo(sliderIndex + 1, false);
+        }, 6000);
+      }
+
+      function goTo(i, byUser) {
+        if (!sliderCount) return;
+        sliderIndex = (i + sliderCount) % sliderCount;
+        $("slides").style.transform = "translateX(-" + sliderIndex * 100 + "%)";
+        document.querySelectorAll("#slides .slide").forEach((el, n) => {
+          const on = n === sliderIndex;
+          el.setAttribute("aria-hidden", on ? "false" : "true");
+          el.tabIndex = on ? 0 : -1;
+        });
+        document.querySelectorAll("#sliderDots button").forEach((b, n) => {
+          b.classList.toggle("on", n === sliderIndex);
+          b.setAttribute("aria-current", n === sliderIndex ? "true" : "false");
+        });
+        if (byUser) startSlider();
+      }
+
+      function openNotice(id) {
+        const el = document.getElementById("notice-" + id);
+        if (!el) return;
+        el.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+        el.classList.remove("flash");
+        void el.offsetWidth;
+        el.classList.add("flash");
+      }
+
+      function buildSlider(items) {
+        const wrap = $("slider");
+        const track = $("slides");
+        const dots = $("sliderDots");
+        track.innerHTML = "";
+        dots.innerHTML = "";
+        stopSlider();
+        sliderCount = items.length;
+        $("allNoticesTitle").hidden = items.length === 0;
+        if (items.length === 0) {
+          wrap.hidden = true;
+          return;
+        }
+        wrap.hidden = false;
+
+        items.forEach((a, i) => {
+          const slide = document.createElement("a");
+          slide.className = "slide";
+          slide.href = "#notice-" + a.id;
+          const hasImage = a.media_url && a.media_type !== "video";
+          if (hasImage) {
+            slide.classList.add("has-img");
+            slide.style.setProperty("--slide-img", 'url("' + a.media_url + '")');
+          }
+
+          const d = new Date(a.created_at);
+          const chip = document.createElement("span");
+          chip.className = "slide-date";
+          chip.textContent =
+            d.getDate() + " " + d.toLocaleString("en-GB", { month: "short" }) +
+            (a.media_type === "video" ? "  \u2022  Video" : "");
+          const title = document.createElement("h3");
+          title.textContent = a.title;
+          slide.append(chip, title);
+          if (a.message) {
+            const msg = document.createElement("p");
+            msg.textContent = a.message;
+            slide.appendChild(msg);
+          }
+          slide.addEventListener("click", (e) => {
+            e.preventDefault();
+            openNotice(a.id);
+          });
+          track.appendChild(slide);
+
+          const dot = document.createElement("button");
+          dot.type = "button";
+          dot.setAttribute("aria-label", "Show notice " + (i + 1) + " of " + items.length);
+          dot.addEventListener("click", () => goTo(i, true));
+          dots.appendChild(dot);
+        });
+
+        const many = items.length > 1;
+        $("sliderPrev").hidden = !many;
+        $("sliderNext").hidden = !many;
+        $("sliderPause").hidden = !many;
+        dots.hidden = !many;
+        $("sliderPause").textContent = sliderUserPaused ? "Play" : "Pause";
+
+        goTo(Math.min(sliderIndex, items.length - 1), false);
+        startSlider();
+      }
+
+      $("sliderPrev").addEventListener("click", () => goTo(sliderIndex - 1, true));
+      $("sliderNext").addEventListener("click", () => goTo(sliderIndex + 1, true));
+      $("sliderPause").addEventListener("click", () => {
+        sliderUserPaused = !sliderUserPaused;
+        $("sliderPause").textContent = sliderUserPaused ? "Play" : "Pause";
+        if (sliderUserPaused) stopSlider();
+        else startSlider();
+      });
+
+      const sliderBox = $("slider");
+      sliderBox.addEventListener("mouseenter", () => { sliderHold = true; });
+      sliderBox.addEventListener("mouseleave", () => { sliderHold = false; });
+      sliderBox.addEventListener("focusin", () => { sliderHold = true; });
+      sliderBox.addEventListener("focusout", () => { sliderHold = false; });
+      sliderBox.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft") goTo(sliderIndex - 1, true);
+        if (e.key === "ArrowRight") goTo(sliderIndex + 1, true);
+      });
+      sliderBox.addEventListener("touchstart", (e) => {
+        sliderTouchX = e.touches[0].clientX;
+        sliderHold = true;
+      }, { passive: true });
+      sliderBox.addEventListener("touchend", (e) => {
+        sliderHold = false;
+        if (sliderTouchX === null) return;
+        const dx = e.changedTouches[0].clientX - sliderTouchX;
+        sliderTouchX = null;
+        if (Math.abs(dx) > 40) goTo(sliderIndex + (dx < 0 ? 1 : -1), true);
+      }, { passive: true });
+
+      // ---------- Programs and forms ----------
+      let programsCache = [];
+      let manageForm = null;
+      let builder = null;
+      const TYPE_LABELS = [
+        ["text", "Short answer"],
+        ["textarea", "Long answer"],
+        ["number", "Number"],
+        ["date", "Date"],
+        ["choice", "Choose one"],
+        ["multi", "Choose many"],
+      ];
+
+      function h(tag, props, ...kids) {
+        const e = document.createElement(tag);
+        const p = props || {};
+        Object.keys(p).forEach((k) => {
+          const v = p[k];
+          if (k === "class") e.className = v;
+          else if (k === "value" || k === "checked") return;
+          else if (k.indexOf("on") === 0 && typeof v === "function") e.addEventListener(k.slice(2), v);
+          else if (v === true) e.setAttribute(k, "");
+          else if (v !== false && v !== null && v !== undefined) e.setAttribute(k, v);
+        });
+        kids.flat(Infinity).forEach((c) => {
+          if (c === null || c === undefined || c === false) return;
+          e.append(c.nodeType ? c : document.createTextNode(String(c)));
+        });
+        if (p.value !== undefined && p.value !== null) e.value = p.value;
+        if (p.checked !== undefined) e.checked = !!p.checked;
+        return e;
+      }
+
+      function appendAll(parent, ...kids) {
+        kids.flat(Infinity).forEach((c) => {
+          if (c === null || c === undefined || c === false) return;
+          parent.append(c.nodeType ? c : document.createTextNode(String(c)));
+        });
+      }
+
+      function answerText(v) {
+        return Array.isArray(v) ? v.join(", ") : String(v);
+      }
+
+      function showPane(name) {
+        $("progHead").hidden = name !== "list";
+        $("progList").hidden = name !== "list";
+        $("progFill").hidden = name !== "fill";
+        $("progManage").hidden = name !== "manage";
+        window.scrollTo(0, 0);
+      }
+      function showProgramList() { showPane("list"); }
+      function backToList() {
+        showProgramList();
+        loadForms().catch(() => {});
+      }
+
+      async function loadForms() {
+        programsCache = await api("/forms/");
+        renderProgramList();
+      }
+
+      function renderProgramList() {
+        const box = $("progList");
+        box.innerHTML = "";
+        if (programsCache.length === 0) {
+          box.appendChild(emptyState(
+            "No programs yet.",
+            isStaff() ? "Use Create a form to open registration for a program." : "When a program opens for registration it will show here."
+          ));
+          return;
+        }
+        programsCache.forEach((f) => {
+          const pill = f.submitted
+            ? h("span", { class: "pill" }, "Registered")
+            : f.open_now
+            ? h("span", { class: "pill" }, "Open")
+            : h("span", { class: "pill off" }, "Closed");
+          const meta = [];
+          if (f.created_by) meta.push("By " + f.created_by);
+          if (f.closes_on) meta.push((f.open_now ? "Closes " : "Closed ") + formatDay(f.closes_on));
+          if (f.can_edit) meta.push(f.response_count + (f.response_count === 1 ? " registration" : " registrations"));
+          box.appendChild(
+            h("article", { class: "program" },
+              h("div", { class: "program-top" }, h("h3", {}, f.title), pill),
+              f.description ? h("p", {}, f.description) : null,
+              h("div", { class: "program-meta" }, meta.join("  \u2022  ")),
+              h("div", { class: "program-actions" },
+                h("button", {
+                  type: "button",
+                  class: "btn primary small",
+                  onclick: () => openFill(f.id).catch((e) => toast(e.message, true)),
+                }, f.submitted ? "View my registration" : f.open_now ? "Register" : "View"),
+                f.can_edit
+                  ? h("button", {
+                      type: "button",
+                      class: "btn line small",
+                      onclick: () => openManage(f.id).catch((e) => toast(e.message, true)),
+                    }, "Manage")
+                  : null
+              )
+            )
+          );
+        });
+      }
+
+      // ----- Filling in a form -----
+      async function openFill(id) {
+        const f = await api("/forms/" + id + "/");
+        renderFill(f);
+        showPane("fill");
+      }
+
+      function fieldFor(q) {
+        const title = h("span", { class: "q-label" }, q.label, q.required ? h("span", { class: "req" }, " *") : null);
+        if (q.type === "choice" || q.type === "multi") {
+          const group = h("div", { class: "q-field", role: "group", "aria-label": q.label }, title);
+          (q.options || []).forEach((o) => {
+            group.appendChild(
+              h("label", { class: "opt" },
+                h("input", { type: q.type === "choice" ? "radio" : "checkbox", name: "q-" + q.id, value: o, "data-q": q.id }),
+                o
+              )
+            );
+          });
+          return group;
+        }
+        let input;
+        if (q.type === "textarea") input = h("textarea", { rows: "3", maxlength: "2000", "data-q": q.id, required: q.required });
+        else if (q.type === "number") input = h("input", { type: "number", step: "any", "data-q": q.id, required: q.required });
+        else if (q.type === "date") input = h("input", { type: "date", "data-q": q.id, required: q.required });
+        else input = h("input", { type: "text", maxlength: "300", "data-q": q.id, required: q.required });
+        return h("label", { class: "q-field" }, title, input);
+      }
+
+      function collectAnswers(f, formEl) {
+        const answers = {};
+        f.questions.forEach((q) => {
+          const sel = '[data-q="' + q.id + '"]';
+          if (q.type === "multi") {
+            answers[q.id] = Array.from(formEl.querySelectorAll(sel + ":checked")).map((i) => i.value);
+          } else if (q.type === "choice") {
+            const c = formEl.querySelector(sel + ":checked");
+            answers[q.id] = c ? c.value : "";
+          } else {
+            const el = formEl.querySelector(sel);
+            answers[q.id] = el ? el.value : "";
+          }
+        });
+        return answers;
+      }
+
+      function renderFill(f) {
+        const box = $("progFill");
+        box.innerHTML = "";
+        box.appendChild(h("button", { type: "button", class: "back", onclick: backToList }, "\u2039 Back to programs"));
+        box.appendChild(h("h2", { class: "fill-title" }, f.title));
+        if (f.description) box.appendChild(h("p", { class: "fill-desc" }, f.description));
+
+        if (f.my_answers) {
+          const sheet = h("div", { class: "sheet" }, h("h3", {}, "You are registered."));
+          if (f.my_submitted_at) {
+            sheet.appendChild(h("p", { class: "hint" }, "Registered on " +
+              new Date(f.my_submitted_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })));
+          }
+          f.questions.forEach((q) => {
+            const v = f.my_answers[q.id];
+            sheet.appendChild(h("div", { class: "ans" }, h("strong", {}, q.label + ": "), v === undefined ? "-" : answerText(v)));
+          });
+          box.appendChild(sheet);
+          return;
+        }
+
+        if (!f.open_now) {
+          box.appendChild(emptyState("Registration is closed.", "This program is not taking registrations right now."));
+          return;
+        }
+
+        const formEl = h("form", { class: "sheet" });
+        if (f.questions.length === 0) {
+          formEl.appendChild(h("p", { class: "hint" }, "Press the button below to register."));
+        }
+        f.questions.forEach((q) => formEl.appendChild(fieldFor(q)));
+        formEl.appendChild(
+          h("div", { class: "row-actions" },
+            h("button", { class: "btn primary", type: "submit", id: "fillSubmit" }, "Submit registration"))
+        );
+        formEl.addEventListener("submit", (e) => {
+          e.preventDefault();
+          busy($("fillSubmit"), async () => {
+            try {
+              await api("/forms/" + f.id + "/submit/", {
+                method: "POST",
+                body: JSON.stringify({ answers: collectAnswers(f, formEl) }),
+              });
+              toast("You are registered.");
+              await openFill(f.id);
+              loadForms().catch(() => {});
+            } catch (err) {
+              toast(err.message, true);
+            }
+          });
+        });
+        box.appendChild(formEl);
+      }
+
+      // ----- Creating and managing forms -----
+      function newQuestion() {
+        return { id: "", label: "", type: "text", required: false, options: [] };
+      }
+
+      function openCreate() {
+        manageForm = null;
+        builder = { id: null, title: "", description: "", closes_on: "", is_open: true, questions: [newQuestion()] };
+        renderManage();
+        showPane("manage");
+      }
+
+      async function openManage(id) {
+        const f = await api("/forms/" + id + "/");
+        manageForm = f;
+        builder = {
+          id: f.id,
+          title: f.title,
+          description: f.description,
+          closes_on: f.closes_on || "",
+          is_open: f.is_open,
+          questions: f.questions.map((q) => ({ ...q, options: q.options ? q.options.slice() : [] })),
+        };
+        renderManage();
+        showPane("manage");
+        loadResponses(f.id).catch((err) => toast(err.message, true));
+      }
+
+      function renderManage() {
+        const f = manageForm;
+        const box = $("progManage");
+        box.innerHTML = "";
+        box.appendChild(h("button", { type: "button", class: "back", onclick: backToList }, "\u2039 Back to programs"));
+        box.appendChild(h("h2", { class: "fill-title" }, f ? "Manage: " + f.title : "New form"));
+
+        box.appendChild(
+          h("div", { class: "sheet" },
+            h("h3", {}, "Form"),
+            h("div", { id: "builderBox" }),
+            h("div", { class: "row-actions" },
+              h("button", { type: "button", class: "btn line small", onclick: addQuestion }, "Add a question"),
+              h("button", { type: "button", class: "btn primary", id: "builderSave", onclick: () => busy($("builderSave"), saveBuilder) },
+                f ? "Save changes" : "Create form"))
+          )
+        );
+
+        if (f) {
+          box.appendChild(
+            h("div", { class: "sheet" },
+              h("div", { class: "sheet-head" },
+                h("h3", {}, "Registrations"),
+                h("button", { type: "button", class: "btn line small", onclick: () => downloadResponses(f) }, "Download for Excel")),
+              h("div", { id: "respBox" }))
+          );
+          box.appendChild(
+            h("div", { class: "sheet" }, h("h3", {}, "Who can edit this form"), h("div", { id: "shareBox" }))
+          );
+          if (f.is_owner) {
+            box.appendChild(
+              h("div", { class: "sheet" },
+                h("h3", {}, "Delete this form"),
+                h("p", { class: "hint" }, "This also deletes every registration. It cannot be undone."),
+                h("div", { class: "row-actions" },
+                  h("button", { type: "button", class: "btn line small", onclick: deleteForm }, "Delete form")))
+            );
+          }
+        }
+        renderBuilder();
+        if (f) renderSharing(f);
+      }
+
+      function renderBuilder() {
+        const b = builder;
+        const box = $("builderBox");
+        box.innerHTML = "";
+        appendAll(box,
+          h("label", { for: "bfTitle" }, "Title"),
+          h("input", { id: "bfTitle", maxlength: "200", placeholder: "e.g. Youth Camp 2026 registration", value: b.title,
+            oninput: (e) => { b.title = e.target.value; } }),
+          h("label", { for: "bfDesc" }, "Description (optional)"),
+          h("textarea", { id: "bfDesc", rows: "3", maxlength: "2000", value: b.description,
+            oninput: (e) => { b.description = e.target.value; } }),
+          h("label", { for: "bfClose" }, "Closes on (optional)"),
+          h("input", { id: "bfClose", type: "date", value: b.closes_on,
+            oninput: (e) => { b.closes_on = e.target.value; } }),
+          h("label", { class: "switch-row" },
+            h("input", { type: "checkbox", checked: b.is_open, onchange: (e) => { b.is_open = e.target.checked; } }),
+            "Accepting registrations"),
+          h("h3", { class: "sub" }, "Questions"),
+          b.questions.length === 0 ? h("p", { class: "hint" }, "No questions yet. People will just press Register.") : null,
+          b.questions.map((q, i) => questionEditor(q, i))
+        );
+      }
+
+      function questionEditor(q, i) {
+        const needsOptions = q.type === "choice" || q.type === "multi";
+        const last = builder.questions.length - 1;
+        return h("div", { class: "q-edit" },
+          h("div", { class: "q-top" },
+            h("input", { value: q.label, placeholder: "Question " + (i + 1), "aria-label": "Question " + (i + 1), maxlength: "200",
+              oninput: (e) => { q.label = e.target.value; } }),
+            h("select", { "aria-label": "Answer type", value: q.type,
+              onchange: (e) => { q.type = e.target.value; renderBuilder(); } },
+              TYPE_LABELS.map((t) => h("option", { value: t[0] }, t[1])))
+          ),
+          needsOptions
+            ? h("textarea", { rows: "3", placeholder: "One option per line", "aria-label": "Options", value: q.options.join("\n"),
+                oninput: (e) => { q.options = e.target.value.split("\n"); } })
+            : null,
+          h("div", { class: "q-bottom" },
+            h("label", { class: "inline-check" },
+              h("input", { type: "checkbox", checked: q.required, onchange: (e) => { q.required = e.target.checked; } }),
+              "Required"),
+            h("span", { class: "q-tools" },
+              h("button", { type: "button", class: "btn line small", disabled: i === 0, onclick: () => moveQuestion(i, -1) }, "Up"),
+              h("button", { type: "button", class: "btn line small", disabled: i === last, onclick: () => moveQuestion(i, 1) }, "Down"),
+              h("button", { type: "button", class: "link-danger", onclick: () => removeQuestion(i) }, "Remove")))
+        );
+      }
+
+      function addQuestion() {
+        if (builder.questions.length >= 30) {
+          toast("A form can have at most 30 questions.", true);
+          return;
+        }
+        builder.questions.push(newQuestion());
+        renderBuilder();
+      }
+      function moveQuestion(i, d) {
+        const j = i + d;
+        const qs = builder.questions;
+        if (j < 0 || j >= qs.length) return;
+        [qs[i], qs[j]] = [qs[j], qs[i]];
+        renderBuilder();
+      }
+      function removeQuestion(i) {
+        builder.questions.splice(i, 1);
+        renderBuilder();
+      }
+
+      async function saveBuilder() {
+        const b = builder;
+        const payload = {
+          title: b.title.trim(),
+          description: b.description.trim(),
+          is_open: b.is_open,
+          closes_on: b.closes_on || null,
+          questions: b.questions.map((q) => ({
+            id: q.id, label: q.label, type: q.type, required: q.required, options: q.options,
+          })),
+        };
+        if (!payload.title) {
+          toast("Give the form a title.", true);
+          return;
+        }
+        try {
+          if (b.id) {
+            await api("/forms/" + b.id + "/", { method: "PATCH", body: JSON.stringify(payload) });
+            toast("Form saved.");
+            await openManage(b.id);
+          } else {
+            const created = await api("/forms/", { method: "POST", body: JSON.stringify(payload) });
+            toast("Form created. You can share it with other executives below.");
+            await openManage(created.id);
+          }
+          loadForms().catch(() => {});
+        } catch (err) {
+          toast(err.message, true);
+        }
+      }
+
+      async function loadResponses(id) {
+        const data = await api("/forms/" + id + "/responses/");
+        const box = $("respBox");
+        if (!box) return;
+        box.innerHTML = "";
+        const n = data.responses.length;
+        if (n === 0) {
+          box.appendChild(emptyState("No registrations yet.", "They will show here as people register."));
+          return;
+        }
+        box.appendChild(h("p", { class: "hint" }, n + (n === 1 ? " person has registered." : " people have registered.")));
+        data.responses.forEach((r) => {
+          const lines = data.questions
+            .filter((q) => r.answers[q.id] !== undefined)
+            .map((q) => h("div", { class: "ans" }, h("strong", {}, q.label + ": "), answerText(r.answers[q.id])));
+          box.appendChild(
+            h("div", { class: "resp" },
+              h("div", { class: "resp-head" },
+                h("div", {},
+                  h("strong", {}, r.full_name),
+                  h("div", { class: "hint" }, [r.group, r.phone, r.school].filter(Boolean).join(", "))),
+                h("button", { type: "button", class: "link-danger", onclick: () => removeResponse(id, r) }, "Remove")),
+              lines)
+          );
+        });
+      }
+
+      async function removeResponse(formId, r) {
+        if (!confirm("Remove the registration of " + r.full_name + "?")) return;
+        try {
+          await api("/forms/" + formId + "/responses/" + r.id + "/", { method: "DELETE" });
+          toast("Registration removed.");
+          await loadResponses(formId);
+        } catch (err) {
+          toast(err.message, true);
+        }
+      }
+
+      async function downloadResponses(f) {
+        try {
+          const res = await fetch(API + "/forms/" + f.id + "/export/", { headers: { Authorization: "Token " + token } });
+          if (!res.ok) throw new Error("Could not download the registrations.");
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "registrations-" + f.id + ".csv";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+        } catch (err) {
+          toast(err.message, true);
+        }
+      }
+
+      function renderSharing(f) {
+        const box = $("shareBox");
+        box.innerHTML = "";
+        if (!f.is_owner) {
+          box.appendChild(h("p", { class: "hint" },
+            "You can edit this form because " + (f.created_by || "its creator") +
+            " gave you access. Only they can share it or delete it."));
+          return;
+        }
+        box.appendChild(h("p", { class: "hint" },
+          "Only you can edit this form. People you choose below can edit it too and see its registrations. Only you can share or delete it."));
+        if (f.candidates.length === 0) {
+          box.appendChild(h("p", { class: "hint" }, "There are no other executives yet."));
+          return;
+        }
+        const chosen = new Set(f.editors.map((e) => e.id));
+        const list = h("div", { class: "checks" });
+        f.candidates.forEach((c) => {
+          list.appendChild(
+            h("label", { class: "check" },
+              h("input", { type: "checkbox", checked: chosen.has(c.id),
+                onchange: (e) => { if (e.target.checked) chosen.add(c.id); else chosen.delete(c.id); } }),
+              c.full_name + "  (" + roleLabel(c.role) + ")")
+          );
+        });
+        box.appendChild(list);
+        box.appendChild(
+          h("div", { class: "row-actions" },
+            h("button", { type: "button", class: "btn primary small", id: "shareSave", onclick: () => busy($("shareSave"), async () => {
+              try {
+                const data = await api("/forms/" + f.id + "/editors/", { method: "PUT", body: JSON.stringify({ editors: Array.from(chosen) }) });
+                manageForm = data;
+                toast("Access updated.");
+                renderSharing(data);
+              } catch (err) {
+                toast(err.message, true);
+              }
+            }) }, "Save access"))
+        );
+      }
+
+      async function deleteForm() {
+        if (!confirm('Delete "' + manageForm.title + '" and all its registrations? This cannot be undone.')) return;
+        try {
+          await api("/forms/" + manageForm.id + "/", { method: "DELETE" });
+          toast("Form deleted.");
+          showProgramList();
+          await loadForms();
+        } catch (err) {
+          toast(err.message, true);
+        }
+      }
+
+      $("progCreate").addEventListener("click", openCreate);
 
       // ---------- Login page picture ----------
       let siteInfo = { login_background: "" };
