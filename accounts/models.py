@@ -97,6 +97,15 @@ class SiteSettings(models.Model):
     intro_text = models.TextField(
         default="Rev. Ebmmc MYF. Log in to see notices, your attendance and who is in the fellowship."
     )
+    about_text = models.TextField(blank=True)
+    meeting_info = models.TextField(blank=True)
+    contact_info = models.TextField(blank=True)
+    vision_text = models.TextField(blank=True)
+    mission_text = models.TextField(blank=True)
+    uniform_text = models.TextField(blank=True)
+    anthem_title = models.CharField(max_length=120, blank=True)
+    anthem_text = models.TextField(blank=True)
+    anthem_audio = models.FileField(upload_to="site/", blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     @classmethod
@@ -149,3 +158,85 @@ class FormResponse(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.form}"
+
+
+from django.utils import timezone
+
+
+class DuesItem(models.Model):
+    name = models.CharField(max_length=120)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    due_date = models.DateField(null=True, blank=True)
+    members = models.ManyToManyField(Profile, blank=True, related_name="dues_items")
+    monthly = models.BooleanField(default=False)
+    start_month = models.DateField(null=True, blank=True)
+    end_month = models.DateField(null=True, blank=True)
+    member_starts = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.name
+
+
+class DuesPayment(models.Model):
+    METHODS = [
+        ("cash", "Cash"),
+        ("momo", "Mobile money"),
+        ("bank", "Bank transfer"),
+        ("other", "Other"),
+        ("waived", "Waived"),
+    ]
+
+    item = models.ForeignKey(DuesItem, on_delete=models.CASCADE, related_name="payments")
+    member = models.ForeignKey(
+        Profile, on_delete=models.CASCADE, related_name="dues_payments"
+    )
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    method = models.CharField(max_length=20, choices=METHODS, default="cash")
+    paid_on = models.DateField(default=timezone.localdate)
+    note = models.CharField(max_length=200, blank=True)
+    recorded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["paid_on", "id"]
+
+    def __str__(self):
+        return f"{self.member} - {self.item} - {self.amount}"
+
+
+class AboutPhoto(models.Model):
+    SECTIONS = [
+        ("story", "Our story"),
+        ("uniform", "Our uniform"),
+        ("moments", "Moments"),
+    ]
+
+    section = models.CharField(max_length=20, choices=SECTIONS)
+    image = models.FileField(upload_to="about/")
+    caption = models.CharField(max_length=200, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at", "id"]
+
+    def __str__(self):
+        return f"{self.section}: {self.caption or self.image.name}"
+
+
+class Leader(models.Model):
+    name = models.CharField(max_length=150)
+    position = models.CharField(max_length=80)
+    photo = models.FileField(upload_to="leaders/", blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["id"]
+
+    def __str__(self):
+        return f"{self.name} ({self.position})"

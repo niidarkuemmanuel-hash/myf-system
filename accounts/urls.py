@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import form_views, views
+from . import about_views, dues_views, form_views, views
 
 urlpatterns = [
     path("signup/", views.signup),
@@ -26,4 +26,17 @@ urlpatterns = [
     path("forms/<int:form_id>/responses/<int:response_id>/", form_views.form_response_detail),
     path("forms/<int:form_id>/editors/", form_views.form_editors),
     path("forms/<int:form_id>/export/", form_views.form_export),
+    path("about/", about_views.about),
+    path("about/photos/", about_views.about_photos),
+    path("about/photos/<int:photo_id>/", about_views.about_photo_detail),
+    path("about/audio/", about_views.about_audio),
+    path("about/leaders/", about_views.about_leaders),
+    path("about/leaders/<int:leader_id>/", about_views.about_leader_detail),
+    path("my-dues/", dues_views.my_dues),
+    path("dues/", dues_views.dues_collection),
+    path("dues/<int:item_id>/", dues_views.dues_detail),
+    path("dues/<int:item_id>/members/", dues_views.dues_members),
+    path("dues/<int:item_id>/payments/", dues_views.dues_payments),
+    path("dues/<int:item_id>/payments/<int:payment_id>/", dues_views.dues_payment_detail),
+    path("dues/<int:item_id>/export/", dues_views.dues_export),
 ]
