@@ -8,6 +8,7 @@ urlpatterns = [
     path("me/", views.me),
     path("members/", views.members),
     path("members/<int:profile_id>/group/", views.set_member_group),
+    path("members/<int:profile_id>/role/", views.set_member_role),
     path("pending/", views.pending),
     path("approve/<int:profile_id>/", views.approve),
     path("announcements/", views.announcements),

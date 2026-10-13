@@ -332,6 +332,11 @@
       .leader-card strong { padding: 10px 12px 0; line-height: 1.2; }
       .leader-card .pos { margin: 6px 12px 0; align-self: flex-start; background: var(--yellow); color: var(--ink); font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 99px; }
       .ld-thumb { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex: none; }
+      .more-group.show-sm { display: none; }
+      @media (max-width: 520px) { .more-group.show-sm { display: block; } }
+      .brand { cursor: pointer; }
+      .team-row { margin-top: 14px; }
+      .team-row select { margin-top: 6px; }
       .empty { padding: 28px 18px; border: 1.5px dashed #b9b5de; border-radius: 12px; text-align: center; color: var(--muted); }
       .empty strong { display: block; color: var(--ink); font-family: var(--font-display); font-size: 18px; margin-bottom: 4px; }
       .empty p { margin: 0; }
@@ -394,7 +399,7 @@
           <label for="suGroup">Group</label>
           <select id="suGroup"></select>
           <button class="btn primary wide" id="signupBtn" type="submit">Create account</button>
-          <p class="hint">An executive approves new accounts before you can log in.</p>
+          <p class="hint">The chairman, secretary or treasurer approves new accounts before you can log in.</p>
         </form>
 
         <div id="authMsg" class="msg" role="alert"></div>
@@ -418,9 +423,10 @@
           </div>
         </div>
         <nav class="tabs" id="tabs" role="tablist" aria-label="Main">
+          <button type="button" data-tab="about" role="tab">About us</button>
           <button type="button" data-tab="notices" role="tab">Notices</button>
           <button type="button" data-tab="members" role="tab">Members</button>
-          <button type="button" data-tab="programs" role="tab">Programs</button>
+          <button type="button" data-tab="programs" role="tab" class="hide-sm">Programs</button>
           <button type="button" data-tab="attendance" role="tab" class="hide-sm">Attendance</button>
           <div class="more-wrap">
             <button type="button" id="moreBtn" class="more-btn" aria-haspopup="true" aria-expanded="false">
@@ -429,19 +435,20 @@
             <div class="more-menu" id="moreMenu" hidden>
               <div class="more-group">
                 <div class="more-title">Me</div>
-                <button type="button" data-tab="attendance" class="show-sm">Attendance</button>
                 <button type="button" data-tab="mydues">My dues</button>
                 <button type="button" data-tab="settings">Settings</button>
               </div>
-              <div class="more-group">
+              <div class="more-group show-sm">
                 <div class="more-title">Fellowship</div>
-                <button type="button" data-tab="about">About us</button>
+                <button type="button" data-tab="programs">Programs</button>
+                <button type="button" data-tab="attendance">Attendance</button>
               </div>
               <div class="more-group staff-only">
                 <div class="more-title">Admin</div>
                 <button type="button" data-tab="approvals">Approvals <span class="badge" id="pendingBadge" hidden>0</span></button>
                 <button type="button" data-tab="dashboard">Dashboard</button>
                 <button type="button" data-tab="dues" class="treasurer-only" hidden>Dues</button>
+                <button type="button" data-tab="team" class="treasurer-only" hidden>Admin team</button>
               </div>
             </div>
           </div>
@@ -624,6 +631,20 @@
           <div id="aboutBox"></div>
         </section>
 
+        <!-- Admin team -->
+        <section class="panel" id="panel-team" hidden>
+          <div class="panel-head">
+            <div>
+              <h2>Admin team</h2>
+              <div class="panel-sub">Only you, the treasurer, can see this page.</div>
+            </div>
+          </div>
+          <div class="sheet">
+            <p class="hint">Only the chairman, the secretary and you, the treasurer, can make changes on the admin pages. Dues and money records stay with you alone. Choose who holds each post. Other leaders, such as the vice chairman, still appear on the About us page but cannot make changes.</p>
+            <div id="adminTeam"></div>
+          </div>
+        </section>
+
         <!-- Settings -->
         <section class="panel" id="panel-settings" hidden>
           <div class="panel-head">
@@ -792,7 +813,7 @@
 
             <h3 class="sub">Reset a member's password</h3>
             <div class="sheet">
-              <p class="hint">Use this when someone forgets their password. You get a temporary password to give them privately. Their old password stops working straight away, and they can choose their own under Settings, My account. Executives can reset members. The Treasurer can also reset executives.</p>
+              <p class="hint">Use this when someone forgets their password. You get a temporary password to give them privately. Their old password stops working straight away, and they can choose their own under Settings, My account. The chairman, secretary and treasurer can reset members. The treasurer can also reset the chairman and secretary.</p>
               <label for="rsSearch">Find a person</label>
               <input id="rsSearch" placeholder="Start typing a name" />
               <ul class="people" id="resetList" style="margin-top: 12px"></ul>
@@ -814,8 +835,8 @@
       let attendanceRecords = [];
 
       const $ = (id) => document.getElementById(id);
-      const isStaff = () => !!me && (me.role === "executive" || me.role === "treasurer");
-      const ROLE_LABELS = { member: "Member", executive: "Executive", treasurer: "Treasurer" };
+      const isStaff = () => !!me && ["chairman", "secretary", "treasurer"].indexOf(me.role) !== -1;
+      const ROLE_LABELS = { member: "Member", chairman: "Chairman", secretary: "Secretary", executive: "Executive", treasurer: "Treasurer" };
       const roleLabel = (r) => ROLE_LABELS[r] || r;
 
       function initials(name) {
@@ -975,6 +996,7 @@
           loadMyDues().catch((e) => toast(e.message, true));
         }
         updateMoreButton(name);
+        if (name === "team") loadMembers().catch((e) => toast(e.message, true));
         if (name === "about") loadAbout().catch((e) => toast(e.message, true));
         if (name === "settings" && isStaff()) loadAboutForm().catch(() => {});
         if (name === "programs") {
@@ -996,7 +1018,7 @@
         document.querySelectorAll(".staff-only").forEach((el) => { el.hidden = !isStaff(); });
         document.querySelectorAll(".treasurer-only").forEach((el) => { el.hidden = !(me && me.role === "treasurer"); });
         if (!$("eventDate").value) $("eventDate").value = new Date().toISOString().slice(0, 10);
-        showTab("notices");
+        showTab("about");
         await loadAll();
       }
 
@@ -1148,6 +1170,7 @@
           renderChecklist();
           renderResetList();
           renderGroupList();
+          renderAdminTeam();
         }
       }
 
@@ -1514,7 +1537,7 @@
         list.innerHTML = "";
         if (!isStaff()) return;
         const q = $("rsSearch").value.trim().toLowerCase();
-        const canReset = (m) => m.id !== me.id && (m.role === "member" || (me.role === "treasurer" && m.role === "executive"));
+        const canReset = (m) => m.id !== me.id && (m.role === "member" || (me.role === "treasurer" && (m.role === "chairman" || m.role === "secretary")));
         const rows = membersCache.filter((m) => canReset(m) && (!q || m.full_name.toLowerCase().includes(q)));
         if (rows.length === 0) {
           const li = document.createElement("li");
@@ -2328,7 +2351,7 @@
         box.appendChild(h("p", { class: "hint" },
           "Only you can edit this form. People you choose below can edit it too and see its registrations. Only you can share or delete it."));
         if (f.candidates.length === 0) {
-          box.appendChild(h("p", { class: "hint" }, "There are no other executives yet."));
+          box.appendChild(h("p", { class: "hint" }, "There are no other admins yet."));
           return;
         }
         const chosen = new Set(f.editors.map((e) => e.id));
@@ -2992,8 +3015,8 @@
       }
 
       // ---------- Menu and About page ----------
-      const MORE_TABS = ["mydues", "settings", "about", "approvals", "dashboard", "dues"];
-      const MORE_LABELS = { mydues: "My dues", settings: "Settings", about: "About us", approvals: "Approvals", dashboard: "Dashboard", dues: "Dues", attendance: "Attendance" };
+      const MORE_TABS = ["team", "mydues", "settings", "approvals", "dashboard", "dues"];
+      const MORE_LABELS = { team: "Admin team", mydues: "My dues", settings: "Settings", about: "About us", approvals: "Approvals", dashboard: "Dashboard", dues: "Dues", attendance: "Attendance", programs: "Programs" };
       const smallScreen = window.matchMedia("(max-width: 520px)");
       let currentTab = "notices";
 
@@ -3004,7 +3027,7 @@
 
       function updateMoreButton(name) {
         currentTab = name;
-        const inMore = MORE_TABS.indexOf(name) !== -1 || (name === "attendance" && smallScreen.matches);
+        const inMore = MORE_TABS.indexOf(name) !== -1 || (smallScreen.matches && (name === "attendance" || name === "programs"));
         $("moreBtn").classList.toggle("active", inMore);
         $("moreLabel").textContent = inMore ? MORE_LABELS[name] : "More";
         closeMoreMenu();
@@ -3363,6 +3386,61 @@
           }
         });
       });
+
+      document.querySelector(".brand").addEventListener("click", () => showTab("about"));
+
+      // ---------- Admin team (treasurer only) ----------
+      function renderAdminTeam() {
+        const box = $("adminTeam");
+        if (!box || !me || me.role !== "treasurer") return;
+        box.innerHTML = "";
+        const people = membersCache
+          .filter((m) => m.role !== "treasurer")
+          .slice()
+          .sort((a, b) => a.full_name.localeCompare(b.full_name));
+
+        const row = (roleKey, title) => {
+          const holder = membersCache.find((m) => m.role === roleKey) || null;
+          const sel = h("select", { "aria-label": title, value: holder ? String(holder.id) : "" },
+            h("option", { value: "" }, "Nobody yet"),
+            people.map((m) => h("option", { value: String(m.id) }, m.full_name)));
+          sel.addEventListener("change", async () => {
+            const target = sel.value ? membersCache.find((m) => String(m.id) === sel.value) : null;
+            const restore = () => { sel.value = holder ? String(holder.id) : ""; };
+            if (!target && !holder) return;
+            let msg;
+            if (target) {
+              msg = "Make " + target.full_name + " the " + title.toLowerCase() + "?";
+              if (holder && holder.id !== target.id) msg += " " + holder.full_name + " will become a regular member.";
+              if (target.role === "chairman" || target.role === "secretary") {
+                msg += " " + target.full_name + " will stop being the " + roleLabel(target.role).toLowerCase() + ".";
+              }
+            } else {
+              msg = "Remove " + holder.full_name + " as " + title.toLowerCase() + "? They become a regular member.";
+            }
+            if (!confirm(msg)) {
+              restore();
+              return;
+            }
+            try {
+              if (target) await api("/members/" + target.id + "/role/", { method: "POST", body: JSON.stringify({ role: roleKey }) });
+              else await api("/members/" + holder.id + "/role/", { method: "POST", body: JSON.stringify({ role: "member" }) });
+              toast("Admin team updated.");
+              await loadMembers();
+            } catch (err) {
+              toast(err.message, true);
+              restore();
+            }
+          });
+          return h("div", { class: "team-row" }, h("label", {}, title), sel);
+        };
+
+        box.appendChild(row("chairman", "Chairman"));
+        box.appendChild(row("secretary", "Secretary"));
+        box.appendChild(
+          h("div", { class: "team-row" }, h("label", {}, "Treasurer"), h("div", { class: "hint" }, me.full_name + " (you)"))
+        );
+      }
 
       // ---------- Login page picture ----------
       let siteInfo = { login_background: "" };

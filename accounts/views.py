@@ -15,7 +15,7 @@ from .serializers import (
     SignupSerializer,
 )
 
-STAFF_ROLES = ("executive", "treasurer")
+STAFF_ROLES = ("chairman", "secretary", "treasurer")
 
 
 def is_approved(user):
@@ -141,7 +141,7 @@ def members(request):
     # POST: an executive registers a member directly (already approved)
     if not is_staff_member(request.user):
         return Response(
-            {"error": "Only executives can register members."},
+            {"error": "Only the chairman, secretary or treasurer can register members."},
             status=status.HTTP_403_FORBIDDEN,
         )
     serializer = SignupSerializer(data=request.data)
@@ -159,7 +159,7 @@ def members(request):
 def set_member_group(request, profile_id):
     if not is_staff_member(request.user):
         return Response(
-            {"error": "Only executives can change a person's group."},
+            {"error": "Only the chairman, secretary or treasurer can change a person's group."},
             status=status.HTTP_403_FORBIDDEN,
         )
     try:
@@ -186,7 +186,7 @@ def set_member_group(request, profile_id):
 def pending(request):
     if not is_staff_member(request.user):
         return Response(
-            {"error": "Only executives can see pending sign-ups."},
+            {"error": "Only the chairman, secretary or treasurer can see pending sign-ups."},
             status=status.HTTP_403_FORBIDDEN,
         )
     waiting = (
@@ -202,7 +202,7 @@ def pending(request):
 def approve(request, profile_id):
     if not is_staff_member(request.user):
         return Response(
-            {"error": "Only executives can approve sign-ups."},
+            {"error": "Only the chairman, secretary or treasurer can approve sign-ups."},
             status=status.HTTP_403_FORBIDDEN,
         )
     try:
@@ -219,7 +219,7 @@ def approve(request, profile_id):
 def reset_password(request, profile_id):
     if not is_staff_member(request.user):
         return Response(
-            {"error": "Only executives can reset passwords."},
+            {"error": "Only the chairman, secretary or treasurer can reset passwords."},
             status=status.HTTP_403_FORBIDDEN,
         )
     try:
@@ -233,7 +233,7 @@ def reset_password(request, profile_id):
             status=status.HTTP_400_BAD_REQUEST,
         )
     allowed = target.role == "member" or (
-        request.user.profile.role == "treasurer" and target.role == "executive"
+        request.user.profile.role == "treasurer" and target.role in ("chairman", "secretary")
     )
     if not allowed:
         return Response(
@@ -259,13 +259,13 @@ def reset_password(request, profile_id):
 @api_view(["GET", "POST"])
 @permission_classes([AllowAny])
 def groups(request):
-    """Anyone can read the group list (the sign-up form needs it). Only executives can add."""
+    """Anyone can read the group list (the sign-up form needs it). Only the chairman, secretary or treasurer can add."""
     if request.method == "GET":
         return Response([{"id": g.id, "name": g.name} for g in Group.objects.all()])
 
     if not (request.user.is_authenticated and is_staff_member(request.user)):
         return Response(
-            {"error": "Only executives can add groups."},
+            {"error": "Only the chairman, secretary or treasurer can add groups."},
             status=status.HTTP_403_FORBIDDEN,
         )
     name = str(request.data.get("name", "")).strip()
@@ -295,7 +295,7 @@ def groups(request):
 def group_detail(request, group_id):
     if not is_staff_member(request.user):
         return Response(
-            {"error": "Only executives can change groups."},
+            {"error": "Only the chairman, secretary or treasurer can change groups."},
             status=status.HTTP_403_FORBIDDEN,
         )
     try:
@@ -346,7 +346,7 @@ def announcements(request):
 
     if not is_staff_member(request.user):
         return Response(
-            {"error": "Only executives can post announcements."},
+            {"error": "Only the chairman, secretary or treasurer can post announcements."},
             status=status.HTTP_403_FORBIDDEN,
         )
     serializer = AnnouncementSerializer(data=request.data, context={"request": request})
@@ -364,7 +364,7 @@ def announcements(request):
 def announcement_detail(request, announcement_id):
     if not is_staff_member(request.user):
         return Response(
-            {"error": "Only executives can delete announcements."},
+            {"error": "Only the chairman, secretary or treasurer can delete announcements."},
             status=status.HTTP_403_FORBIDDEN,
         )
     try:
@@ -384,7 +384,7 @@ def announcement_detail(request, announcement_id):
 def attendance(request):
     if not is_staff_member(request.user):
         return Response(
-            {"error": "Only executives can see or take attendance."},
+            {"error": "Only the chairman, secretary or treasurer can see or take attendance."},
             status=status.HTTP_403_FORBIDDEN,
         )
     if request.method == "GET":
@@ -442,14 +442,14 @@ def _site_data(site, request):
 @api_view(["GET", "POST", "PATCH", "DELETE"])
 @permission_classes([AllowAny])
 def site_settings(request):
-    """Anyone can read the site settings. Only executives can change them."""
+    """Anyone can read the site settings. Only the chairman, secretary or treasurer can change them."""
     site = SiteSettings.get()
     if request.method == "GET":
         return Response(_site_data(site, request))
 
     if not (request.user.is_authenticated and is_staff_member(request.user)):
         return Response(
-            {"error": "Only executives can change the site settings."},
+            {"error": "Only the chairman, secretary or treasurer can change the site settings."},
             status=status.HTTP_403_FORBIDDEN,
         )
 
@@ -502,3 +502,45 @@ def site_settings(request):
         site.login_background = None
         site.save()
     return Response(_site_data(site, request))
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def set_member_role(request, profile_id):
+    """Only the treasurer chooses who is chairman and secretary."""
+    if not (is_approved(request.user) and request.user.profile.role == "treasurer"):
+        return Response(
+            {"error": "Only the treasurer can choose the chairman and secretary."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+    new_role = request.data.get("role")
+    if new_role not in ("member", "chairman", "secretary"):
+        return Response(
+            {"error": "Choose member, chairman or secretary."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    try:
+        profile = Profile.objects.get(id=profile_id)
+    except Profile.DoesNotExist:
+        return Response({"error": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+    if profile.role == "treasurer":
+        return Response(
+            {"error": "The treasurer's role cannot be changed here."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    if profile.status != "approved":
+        return Response(
+            {"error": "Approve this person first."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    stepped_down = []
+    if new_role in ("chairman", "secretary"):
+        for other in Profile.objects.filter(role=new_role).exclude(id=profile.id):
+            other.role = "member"
+            other.save()
+            stepped_down.append(other.full_name)
+    profile.role = new_role
+    profile.save()
+    return Response(
+        {"profile": ProfileFullSerializer(profile).data, "stepped_down": stepped_down}
+    )

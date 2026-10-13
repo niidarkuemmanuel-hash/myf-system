@@ -226,7 +226,7 @@ def forms_collection(request):
         return Response([form_data(f, request.user) for f in items])
 
     if not is_staff_member(request.user):
-        return err("Only executives can create forms.", status.HTTP_403_FORBIDDEN)
+        return err("Only the chairman, secretary or treasurer can create forms.", status.HTTP_403_FORBIDDEN)
     form = RegistrationForm(created_by=request.user)
     try:
         apply_form_fields(form, request.data, creating=True)

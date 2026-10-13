@@ -91,7 +91,7 @@ def about(request):
         return err("Your account is not approved yet.", status.HTTP_403_FORBIDDEN)
     if request.method == "PATCH":
         if not is_staff_member(request.user):
-            return err("Only executives can edit the About page.", status.HTTP_403_FORBIDDEN)
+            return err("Only the chairman, secretary or treasurer can edit the About page.", status.HTTP_403_FORBIDDEN)
         site = SiteSettings.get()
         for field, limit in TEXT_LIMITS:
             if field in request.data:
@@ -105,7 +105,7 @@ def about(request):
 @permission_classes([IsAuthenticated])
 def about_photos(request):
     if not is_staff_member(request.user):
-        return err("Only executives can add pictures.", status.HTTP_403_FORBIDDEN)
+        return err("Only the chairman, secretary or treasurer can add pictures.", status.HTTP_403_FORBIDDEN)
     section = request.data.get("section")
     if section not in PHOTO_SECTIONS:
         return err("Choose where the picture should go.")
@@ -130,7 +130,7 @@ def about_photos(request):
 @permission_classes([IsAuthenticated])
 def about_photo_detail(request, photo_id):
     if not is_staff_member(request.user):
-        return err("Only executives can remove pictures.", status.HTTP_403_FORBIDDEN)
+        return err("Only the chairman, secretary or treasurer can remove pictures.", status.HTTP_403_FORBIDDEN)
     try:
         photo = AboutPhoto.objects.get(id=photo_id)
     except AboutPhoto.DoesNotExist:
@@ -144,7 +144,7 @@ def about_photo_detail(request, photo_id):
 @permission_classes([IsAuthenticated])
 def about_audio(request):
     if not is_staff_member(request.user):
-        return err("Only executives can change the recording.", status.HTTP_403_FORBIDDEN)
+        return err("Only the chairman, secretary or treasurer can change the recording.", status.HTTP_403_FORBIDDEN)
     site = SiteSettings.get()
     if request.method == "DELETE":
         if site.anthem_audio:
@@ -179,7 +179,7 @@ def photo_problem(upload):
 @permission_classes([IsAuthenticated])
 def about_leaders(request):
     if not is_staff_member(request.user):
-        return err("Only executives can edit the leadership.", status.HTTP_403_FORBIDDEN)
+        return err("Only the chairman, secretary or treasurer can edit the leadership.", status.HTTP_403_FORBIDDEN)
     name = str(request.data.get("name", "")).strip()
     position = str(request.data.get("position", "")).strip()
     if not name:
@@ -203,7 +203,7 @@ def about_leaders(request):
 @permission_classes([IsAuthenticated])
 def about_leader_detail(request, leader_id):
     if not is_staff_member(request.user):
-        return err("Only executives can edit the leadership.", status.HTTP_403_FORBIDDEN)
+        return err("Only the chairman, secretary or treasurer can edit the leadership.", status.HTTP_403_FORBIDDEN)
     try:
         leader = Leader.objects.get(id=leader_id)
     except Leader.DoesNotExist:

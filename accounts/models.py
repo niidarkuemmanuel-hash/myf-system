@@ -7,6 +7,8 @@ from django.dispatch import receiver
 class Profile(models.Model):
     ROLES = [
         ("member", "Member"),
+        ("chairman", "Chairman"),
+        ("secretary", "Secretary"),
         ("executive", "Executive"),
         ("treasurer", "Treasurer"),
     ]
